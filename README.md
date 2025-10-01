@@ -65,9 +65,9 @@ O sistema oferece uma interface amigável e funcionalidades completas para facil
 
 5. Inicie o frontend:
 
-```bash
+   ```bash
     npm run dev
-```
+   ```
 
 6. Acesse no navegador: http://localhost:3000
 
