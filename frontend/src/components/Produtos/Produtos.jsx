@@ -40,7 +40,7 @@ export default function Page() {
                         {produtos.map((produto) => (
                             <div key={produto.id}>
                                 <a
-                                    href="#"
+                                    href="/catalogo/produto"
                                     className="group relative block h-72 overflow-hidden bg-gray-100"
                                 >
                                     <img

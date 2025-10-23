@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Coins } from 'lucide-react';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Coins } from "lucide-react";
 
 export default function AbrirCaixa() {
   const [etapa, setEtapa] = useState(1);
-  const [registro, setRegistro] = useState('');
-  const [senha, setSenha] = useState('');
+  const [registro, setRegistro] = useState("");
+  const [senha, setSenha] = useState("");
 
   const handleAbrirCaixa = () => setEtapa(2);
 
   const handleLogin = () => {
     if (registro && senha) {
-      console.log('Login enviado:', { registro, senha });
+      console.log("Login enviado:", { registro, senha });
     }
   };
 
@@ -26,6 +26,9 @@ export default function AbrirCaixa() {
           background-repeat: no-repeat;
           background-size: cover;
           background-position: bottom;
+        }
+        input[type=number]::-webkit-inner-spin-button{
+          appearance: none; 
         }
       `}</style>
 
@@ -55,6 +58,7 @@ export default function AbrirCaixa() {
             <div className="flex flex-col gap-4 w-[250px] mt-4">
               <Input
                 placeholder="N° REGISTRO"
+                type="number"
                 value={registro}
                 onChange={(e) => setRegistro(e.target.value)}
                 className="bg-[#FDF0D5] text-[#c1121f] tracking-[0.2em] border-none rounded-none text-center py-6 focus-visible:ring-0 focus-visible:ring-offset-0"

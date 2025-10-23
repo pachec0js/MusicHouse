@@ -118,7 +118,7 @@ export default function Page() {
             >
               {cards.map((card, i) => (
                 <SwiperSlide key={i}>
-                  <Link href="#">
+                  <Link href="/catalogo/categoria">
                     <div className="mt-2 mb-2 w-50 h-60 max-w-xs mx-auto overflow-hidden bg-white rounded-lg shadow-lg dark:bg-gray-800 cursor-pointer hover:scale-105 transition-transform duration-300">
                       <img
                         className="object-cover w-full"
