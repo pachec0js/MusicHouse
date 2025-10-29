@@ -4,6 +4,16 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Trash2 } from 'lucide-react';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 export default function PdvHome() {
   const [produtos, setProdutos] = useState([
@@ -192,7 +202,7 @@ export default function PdvHome() {
             </Button>
 
             <img
-              src="/logos/logoEscrita.png"
+              src="/logos/logoEscritaVermelha.png"
               alt="Logo Music House"
               className="w-36 sm:w-48 mx-auto mt-3"
             />
@@ -249,9 +259,47 @@ export default function PdvHome() {
 
         {/* RODAPÉ */}
         <div className="w-full bg-[var(--vermelho-vivo)] text-center py-3 sm:py-4">
-          <Button className="bg-[var(--vermelho-vivo)] hover:bg-[var(--vermelho-vivo)] hover:opacity-[0.9] cursor-pointer text-white text-base sm:text-lg font-semibold rounded-none w-full py-5 sm:py-6 transition-all">
-            FECHAR CAIXA
-          </Button>
+          <Dialog>
+            <form>
+              <DialogTrigger asChild>
+                <Button className="bg-[var(--vermelho-vivo)] hover:bg-[var(--vermelho-vivo)] hover:opacity-[0.9] cursor-pointer text-white text-base sm:text-lg font-semibold rounded-none w-full py-5 sm:py-6 transition-all">
+                  FECHAR CAIXA
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Fechar o caixa</DialogTitle>
+                  <DialogDescription>
+                    Digite suas informações para fechar o caixa
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4">
+                  <div className="grid gap-3">
+                    <label>Name</label>
+                    <Input
+                      id="name-1"
+                      name="name"
+                      defaultValue="Pedro Duarte"
+                    />
+                  </div>
+                  <div className="grid gap-3">
+                    <label>Username</label>
+                    <Input
+                      id="username-1"
+                      name="username"
+                      defaultValue="@peduarte"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                  </DialogClose>
+                  <Button type="submit">Save changes</Button>
+                </DialogFooter>
+              </DialogContent>
+            </form>
+          </Dialog>
         </div>
       </div>
     </>

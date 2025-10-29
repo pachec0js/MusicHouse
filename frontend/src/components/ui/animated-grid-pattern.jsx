@@ -28,7 +28,6 @@ export default function AnimatedGridPattern({
     ];
   }
 
-  // Adjust the generateSquares function to return objects with an id, x, and y
   function generateSquares(count) {
     return Array.from({ length: count }, (_, i) => ({
       id: i,
@@ -36,7 +35,6 @@ export default function AnimatedGridPattern({
     }));
   }
 
-  // Function to update a single square's position
   const updateSquarePosition = (id) => {
     setSquares((currentSquares) =>
       currentSquares.map((sq) =>
@@ -48,14 +46,12 @@ export default function AnimatedGridPattern({
           : sq));
   };
 
-  // Update squares to animate in
   useEffect(() => {
     if (dimensions.width && dimensions.height) {
       setSquares(generateSquares(numSquares));
     }
   }, [dimensions, numSquares]);
 
-  // Resize observer to update container dimensions
   useEffect(() => {
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {

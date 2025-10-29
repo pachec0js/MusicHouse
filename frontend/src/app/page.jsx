@@ -34,7 +34,7 @@ export default function AbrirCaixa() {
 
       <div className="flex flex-col items-center justify-center min-h-screen text-center">
         <img
-          src="/logos/logoEscrita.png"
+          src="/logos/logoEscritaBranca.png"
           alt="Music House"
           className="w-48 mb-6"
         />

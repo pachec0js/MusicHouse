@@ -28,7 +28,6 @@ export function TeamSwitcher({
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <a href="/catalogo">
             <SidebarMenuButton
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
@@ -41,7 +40,6 @@ export function TeamSwitcher({
                 <span className="truncate text-xs">{activeTeam.plan}</span>
               </div>
             </SidebarMenuButton>
-            </a>
           </DropdownMenuTrigger>
         </DropdownMenu>
       </SidebarMenuItem>

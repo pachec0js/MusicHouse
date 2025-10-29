@@ -12,7 +12,7 @@ export default function NavProdutos() {
             className="flex items-center space-x-3 rtl:space-x-reverse"
           >
             <img
-              src="/logoNavProdutos.png"
+              src="/catalogo/logoNavProdutos.png"
               className="h-13 mt-5 ml-7"
               alt="Flowbite Logo"
             />
