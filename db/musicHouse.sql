@@ -310,4 +310,29 @@ CREATE TABLE chamados (
         REFERENCES franquias(id_franquia),
     CONSTRAINT fk_chamado_func FOREIGN KEY (id_funcionario)
         REFERENCES funcionarios(id_registro) 
+
+
+
+
+
+
+        CREATE TABLE `pedidos_filiais` (
+  `id_pedido` int(11) NOT NULL AUTO_INCREMENT,
+  `id_franquia` int(11) NOT NULL,
+  `id_funcionario` int(11) NOT NULL,
+  `id_estoque` int(11) NOT NULL,
+  `quantidade` int(11) NOT NULL,
+  `observacao` text NOT NULL,
+  `status` enum('Pendente','Aprovado','Recusado') DEFAULT 'Pendente',
+  `prioridade` enum('Alta','Média','Baixa') DEFAULT 'Média',
+  `data_pedido` timestamp NULL DEFAULT current_timestamp(),
+  `data_atualizacao` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id_pedido`),
+  KEY `fk_franquia` (`id_franquia`),
+  KEY `fk_funcionario` (`id_funcionario`),
+  KEY `fk_estoque` (`id_estoque`),
+  CONSTRAINT `fk_estoque` FOREIGN KEY (`id_estoque`) REFERENCES `estoque` (`id_estoque`),
+  CONSTRAINT `fk_franquia` FOREIGN KEY (`id_franquia`) REFERENCES `franquias` (`id_franquia`),
+  CONSTRAINT `fk_funcionario` FOREIGN KEY (`id_funcionario`) REFERENCES `funcionarios` (`id_registro`)
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 );

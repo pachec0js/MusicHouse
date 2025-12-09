@@ -14,7 +14,8 @@ import {
   atualizarPedidoRecusado,
   obterEstoquePorIdMatriz,
   listarPedidosFilial,
-  obterPedidoPorIdFranquiaEstoque
+  obterPedidoPorIdFranquiaEstoque,
+  listarMovimentacoesEstoque
 } from '../models/Estoque.js';
 import {
   obterProdutoPorSku,
@@ -522,6 +523,69 @@ const atualizarPedidoRecusadoController = async (req, res) => {
 
 
 
+
+
+
+
+
+
+const listarMovimentacoesEstoqueController = async (req, res) => {
+  try {
+
+    const movimentacoes = await listarMovimentacoesEstoque();
+
+    const movimentacaoDetalhada = await Promise.all(
+      movimentacoes.map(async (mov) => {
+
+
+        const estoque = await obterEstoquePorId(mov.id_estoque);
+
+
+
+        let produtoNome = "";
+        let sku = estoque.sku;
+
+        let produto = await obterProdutoPorSku(sku)
+
+        if (!produto) {
+
+          const variacao = await obterVariacaoPorSku(sku);
+         
+          const produtoBase = await obterProdutoPorId(variacao.id_produto);
+
+          produtoNome = `${produtoBase.nome} (${variacao.nome_cor})`;
+        } else {
+
+          const produto = await obterProdutoPorSku(sku);
+          produtoNome = produto.nome;
+        }
+
+        return {
+          id_movimentacao: mov.id_movimentacao,
+          tipo: mov.tipo_movimentacao,
+          quantidade: mov.quantidade_movimentada,
+          data: mov.data_movimentacao,
+          sku: sku,
+          produto: produtoNome
+        };
+      })
+    );
+
+    res.status(200).json(movimentacaoDetalhada);
+
+  } catch (error) {
+    console.error("Erro ao obter movimentações do estoque", error);
+    res.status(500).json({
+      mensagem: "Erro ao obter movimentações do estoque"
+    });
+  }
+};
+
+
+
+
+
+
 export {
   listarEstoquesController,
   obterEstoquePorIdController,
@@ -533,5 +597,6 @@ export {
   listarPedidosMatrizController,
   atualizarPedidoRecusadoController,
   atualizarEstoqueMatrizController,
-  listarPedidosFilialController
+  listarPedidosFilialController,
+  listarMovimentacoesEstoqueController
 };

@@ -18,6 +18,9 @@
 --
 -- Table structure for table `caixas`
 --
+drop database if exists `musicHouse`;
+CREATE DATABASE IF NOT EXISTS `musicHouse`;
+USE `musicHouse`;
 
 DROP TABLE IF EXISTS `caixas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

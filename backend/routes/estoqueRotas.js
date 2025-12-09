@@ -10,7 +10,8 @@ import {
   listarPedidosMatrizController,
   atualizarPedidoRecusadoController,
   atualizarEstoqueMatrizController,
-  listarPedidosFilialController
+  listarPedidosFilialController,
+  listarMovimentacoesEstoqueController
   
 } from "../controllers/EstoqueController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
@@ -30,6 +31,8 @@ router.post("/pedidosMatriz/:id_estoque", authMiddleware, criarPedidoMatrizContr
 router.post("/atualizarEstoqueMatriz/:id_estoque", authMiddleware, atualizarEstoqueMatrizController);
 router.get("/pedidosMatriz", listarPedidosMatrizController);
 router.get("/pedidosFilial",authMiddleware, listarPedidosFilialController);
+router.get("/movimentacoeEstoque", listarMovimentacoesEstoqueController);
+
 
 router.delete("/:id", excluirEstoqueController);
 

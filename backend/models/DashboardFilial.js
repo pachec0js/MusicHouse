@@ -189,6 +189,54 @@ const listarMovimentacoesEstoque = async (id_franquia) => {
   }
 };
 
+
+
+
+
+const faturamentoConsolidadoFilial = async (id_franquia) => {
+  const daily = await executeRawQuery(
+    `SELECT DATE(data_venda) AS data, SUM(lucro) AS total
+     FROM venda
+     WHERE data_venda >= DATE(NOW() - INTERVAL 7 DAY)
+       AND id_franquia = ?
+     GROUP BY DATE(data_venda)
+     ORDER BY data ASC`,
+    [id_franquia]
+  );
+
+  const monthly = await executeRawQuery(
+    `SELECT DATE(data_venda) AS data, SUM(lucro) AS total
+     FROM venda
+     WHERE data_venda >= DATE(NOW() - INTERVAL 30 DAY)
+       AND id_franquia = ?
+     GROUP BY DATE(data_venda)
+     ORDER BY data ASC`,
+    [id_franquia]
+  );
+
+  const annual = await executeRawQuery(
+    `SELECT DATE_FORMAT(data_venda, '%Y-%m') AS mes, SUM(lucro) AS total
+     FROM venda
+     WHERE data_venda >= DATE(NOW() - INTERVAL 12 MONTH)
+       AND id_franquia = ?
+     GROUP BY DATE_FORMAT(data_venda, '%Y-%m')
+     ORDER BY mes ASC`,
+    [id_franquia]
+  );
+
+  return { daily, monthly, annual };
+};
+
+
+
+
+
+
+
+
+
+
+
 export {
   formasPagamento,
   faturamentoMensal,
@@ -200,4 +248,5 @@ export {
   obterVendasFilial,
   obterItemVendaFilial,
   listarMovimentacoesEstoque,
+  faturamentoConsolidadoFilial
 };

@@ -6,6 +6,7 @@ import FinanceiroHeader from "@/components/FinanceiroMatriz/FinanceiroHeader";
 import FinanceiroCards from "@/components/FinanceiroMatriz/FinanceiroCards";
 import ModalAdicionarDespesa from "@/components/FinanceiroMatriz/ModalAdicionarDespesa";
 import TabelaFinanceiro from "@/components/FinanceiroMatriz/Tabela/TabelaFinanceiro";
+import TabelaVendasFiliais from "@/components/FinanceiroMatriz/TabelaVenda/TabelaVenda";
 
 export default function FinanceiroPage() {
 
@@ -181,12 +182,11 @@ export default function FinanceiroPage() {
             />
 
             <TabelaFinanceiro handleUpdate={handleUpdate} />
-            <div>
-                <h1 className="text-4xl font-bold text-black">Vendas Filias</h1>
-                <h2 className="text-lg text-gray-600 mt-1">
-                    Acompanha todas as vendas realizadas pelas filiais
-                </h2>
-            </div>
+       
+
+
+
+            <TabelaVendasFiliais></TabelaVendasFiliais>
         </div>
 
 

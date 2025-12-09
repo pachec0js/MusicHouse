@@ -66,7 +66,7 @@ export function FaturamentoConsolidado() {
 
       <CardContent className="pt-6">
         <ChartContainer config={chartConfig} className="w-full h-[300px] [&_text]:!fill-white">
-          <ResponsiveContainer>
+       
             <AreaChart data={data}>
               <defs>
                 <linearGradient id="fatFill" x1="0" y1="0" x2="0" y2="1">
@@ -96,7 +96,7 @@ export function FaturamentoConsolidado() {
 
               <ChartLegend content={<ChartLegendContent />} />
             </AreaChart>
-          </ResponsiveContainer>
+     
         </ChartContainer>
       </CardContent>
     </Card>

@@ -7,6 +7,7 @@ import {
 } from '../models/Estoque.js';
 import { lerCadaSessao } from '../models/Caixa.js';
 import { obterFuncionarioPorId } from '../models/Funcionario.js';
+import { listarFranquiaPorId } from '../models/Franquias.js'
 
 const criarVendaController = async (req, res) => {
   try {
@@ -218,11 +219,11 @@ const listarVendasGeralController = async (req, res) => {
           Array.isArray(pagamento) && pagamento.length > 0
             ? pagamento[0].tipo
             : "Desconhecido";
-
+        const franquia = await listarFranquiaPorId(venda.id_franquia)
 
         return {
           id_venda: venda.id_venda,
-          id_franquia: venda.id_franquia,
+          franquia: franquia.cidade,
           funcionario: funcionario.nome_completo,
           id_sessao_caixa: venda.id_sessao_caixa,
           valor_total: venda.valor_total,

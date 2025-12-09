@@ -8,7 +8,8 @@ import {
   faturamentoUltimos7Dias,
   obterVendasFilial,
   obterItemVendaFilial,
-  listarMovimentacoesEstoque
+  listarMovimentacoesEstoque,
+  faturamentoConsolidadoFilial
 
 } from '../models/DashboardFilial.js';
 import { obterDespesaPorId } from '../models/Despesas.js';
@@ -265,6 +266,33 @@ const listarMovimentacoesEstoqueController = async (req, res) => {
 
 
 
+
+const faturamentoConsolidadoFilialController = async (req, res) => {
+  try {
+    const id_franquia = req.usuario.id_franquia
+
+    if (!id_franquia) {
+      return res.status(400).json({
+        mensagem: "O ID da franquia é obrigatório."
+      });
+    }
+
+    const data = await faturamentoConsolidadoFilial(id_franquia);
+
+    res.status(200).json(data);
+  } catch (error) {
+    console.error("Erro ao buscar faturamento consolidado:", error);
+    res
+      .status(500)
+      .json({ mensagem: "Erro ao buscar faturamento consolidado" });
+  }
+};
+
+
+
+
+
+
 export {
   formasPagamentoController,
   vendasDoDiaController,
@@ -274,7 +302,8 @@ export {
   estoqueProdutosController,
   faturamentoUltimos7DiasController,
   produtosMaisVendidosDaSemanaController,
-  listarMovimentacoesEstoqueController
+  listarMovimentacoesEstoqueController,
+  faturamentoConsolidadoFilialController
 
 
 };

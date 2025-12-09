@@ -4,6 +4,7 @@ import {
   create,
   update,
   deleteRecord,
+  executeRawQuery
 } from '../config/database.js';
 
 const listarEstoques = async () => {
@@ -196,6 +197,24 @@ const listarPedidosFilial = async (id_franquia) => {
 }
 
 
+const listarMovimentacoesEstoque = async () => {
+  try {
+    const query = `
+      SELECT *
+      FROM movimentacoes_estoque
+      ORDER BY data_movimentacao DESC
+    `;
+
+    const resultado = await executeRawQuery(query);
+    return resultado;
+
+  } catch (error) {
+    console.error("Erro ao obter movimentações do estoque:", error);
+    throw error;
+  }
+};
+
+
 
 
 
@@ -218,5 +237,6 @@ export {
   obterEstoquePorSku,
   excluirPedidoPoridEstoque,
   listarPedidosFilial,
-  obterPedidoPorIdFranquiaEstoque
+  obterPedidoPorIdFranquiaEstoque,
+  listarMovimentacoesEstoque
 };

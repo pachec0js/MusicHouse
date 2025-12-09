@@ -7,11 +7,15 @@ export default function FinanceiroHeader({ setOpen }) {
   return (
     <div className="flex justify-between items-center">
       <div>
-        <h1 className="text-4xl font-bold text-black">Financeiro</h1>
-        <h2 className="text-lg text-gray-600 mt-1">
+        <h1 className="text-4xl font-bold text-[#003049]">
+          Financeiro
+        </h1>
+
+        <h2 className="text-lg mt-1 text-[#94a3b8]">
           Acompanhe os indicadores financeiros, despesas, vendas e movimentações.
         </h2>
       </div>
+
 
       <Button
         onClick={() => setOpen(true)}

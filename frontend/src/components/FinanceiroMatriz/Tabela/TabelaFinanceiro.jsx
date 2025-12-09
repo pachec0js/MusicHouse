@@ -404,17 +404,29 @@ export default function TabelaFinanceiro() {
         <Button
           onClick={() => setPaginaAtual((p) => Math.max(1, p - 1))}
           disabled={paginaAtual === 1}
-          className="bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
+          className="
+      bg-[#003049] 
+      text-white 
+      border border-[#00263a] 
+      hover:bg-[#00263a] 
+      disabled:opacity-40 
+      disabled:cursor-not-allowed
+    "
         >
           Anterior
         </Button>
 
         <Button
-          onClick={() =>
-            setPaginaAtual((p) => Math.min(totalPaginas, p + 1))
-          }
+          onClick={() => setPaginaAtual((p) => Math.min(totalPaginas, p + 1))}
           disabled={paginaAtual === totalPaginas}
-          className="bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
+          className="
+      bg-[#003049] 
+      text-white 
+      border border-[#00263a] 
+      hover:bg-[#00263a] 
+      disabled:opacity-40 
+      disabled:cursor-not-allowed
+    "
         >
           Próxima
         </Button>
