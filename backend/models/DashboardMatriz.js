@@ -112,25 +112,27 @@ const descobrirTipoSku = async (sku) => {
 
 const faturamentoConsolidadoMatriz = async () => {
   const daily = await executeRawQuery(
-    `SELECT DATE(data_venda) AS data, SUM(lucro) AS total
+    `SELECT DATE(data_venda) AS data, SUM(valor_total) AS total
      FROM venda
      WHERE data_venda >= DATE(NOW() - INTERVAL 7 DAY)
+     AND status = 'Paga'
      GROUP BY DATE(data_venda)
      ORDER BY data ASC`
   );
 
   const monthly = await executeRawQuery(
-    `SELECT DATE(data_venda) AS data, SUM(lucro) AS total
+    `SELECT DATE(data_venda) AS data, SUM(valor_total) AS total
      FROM venda
      WHERE data_venda >= DATE(NOW() - INTERVAL 30 DAY)
+     AND status = 'Paga'
      GROUP BY DATE(data_venda)
      ORDER BY data ASC`
   );
-
   const annual = await executeRawQuery(
-    `SELECT DATE_FORMAT(data_venda, '%Y-%m') AS mes, SUM(lucro) AS total
+    `SELECT DATE_FORMAT(data_venda, '%Y-%m') AS mes, SUM(valor_total) AS total
      FROM venda
      WHERE data_venda >= DATE(NOW() - INTERVAL 12 MONTH)
+     AND status = 'Paga'
      GROUP BY DATE_FORMAT(data_venda, '%Y-%m')
      ORDER BY mes ASC`
   );
@@ -163,9 +165,12 @@ const fluxoCaixaMatriz = async () => {
 
 const crescimentoMatriz = async () => {
   return await executeRawQuery(
-    `SELECT DATE(data_venda) AS date, SUM(lucro) AS value
+    `SELECT 
+        DATE(data_venda) AS date, 
+        SUM(valor_total) AS value 
      FROM venda
      WHERE data_venda >= DATE(NOW() - INTERVAL 10 DAY)
+       AND status = 'Paga'     
      GROUP BY DATE(data_venda)
      ORDER BY date ASC`
   );
