@@ -1,30 +1,42 @@
 "use client";
 
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-
-const data = [
-  { date: "1 de abr.", value: 200 },
-  { date: "2 de abr.", value: 450 },
-  { date: "3 de abr.", value: 820 },
-  { date: "4 de abr.", value: 1200 },
-  { date: "5 de abr.", value: 1350 },
-  { date: "6 de abr.", value: 1600 },
-  { date: "7 de abr.", value: 1800 },
-  { date: "8 de abr.", value: 1900 },
-  { date: "9 de abr.", value: 2100 },
-  { date: "10 de abr.", value: 2200 },
-];
+import { useEffect, useState } from "react";
+import {
+  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer
+} from "recharts";
+import {
+  Card, CardHeader, CardTitle, CardDescription, CardContent
+} from "@/components/ui/card";
 
 export default function GraficoCrescimentoMatriz() {
+  const [data, setData] = useState([]);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    async function load() {
+      const res = await fetch("http://localhost:8080/dashboardMatriz/crescimento");
+      const json = await res.json();
+
+      const formatted = json.map(item => ({
+        value: Number(item.value),
+        label: new Date(item.date).toLocaleDateString("pt-BR", {
+          day: "2-digit",
+          month: "short"
+        })
+      }));
+
+      setData(formatted);
+      setTotal(formatted.reduce((a, b) => a + b.value, 0));
+    }
+
+    load();
+  }, []);
+
   return (
     <Card className="bg-[#002A42] text-white rounded-2xl p-6 w-full">
-      {/* Cabeçalho: título à esquerda e total à direita */}
-      <div className="flex justify-between items-center w-full">
+      <div className="flex justify-between items-center mb-4">
         <div>
-          <CardTitle className="text-xl font-semibold">
-            Indicador de Crescimento
-          </CardTitle>
+          <CardTitle>Indicador de Crescimento</CardTitle>
           <CardDescription className="text-gray-300">
             Evolução diária consolidada
           </CardDescription>
@@ -32,39 +44,38 @@ export default function GraficoCrescimentoMatriz() {
 
         <div className="text-right">
           <p className="text-gray-300 text-sm">Crescimento Total</p>
-          <p className="text-4xl font-bold">2122</p>
+          <p className="text-4xl font-bold">{total}</p>
         </div>
       </div>
 
-      <CardContent className="h-[300px]">
+      <CardContent className="h-[280px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
-            <XAxis 
-              dataKey="date" 
-              stroke="#FFFFFF" 
-              tick={{ fill: "#FFFFFF", fontSize: 12, fontWeight: 600 }} 
-              tickLine={false}
-              axisLine={false}
-              interval={0}  // Mostrar todas as datas
-              textAnchor="start"
-              padding={{ left: 20, right: 20 }}  // Ajustando o padding para dar mais espaço às datas
+            <XAxis
+              dataKey="label"
+              stroke="#FFF"
+              tick={{ fill: "#FFF" }}
+              interval={0}
             />
+
             <YAxis hide />
-            <Tooltip 
+
+            <Tooltip
               contentStyle={{
                 background: "#003653",
                 border: "none",
-                borderRadius: "10px",
+                borderRadius: "10px"
               }}
-              labelStyle={{ color: "#fff" }}
-              itemStyle={{ color: "#fff" }}
+              labelStyle={{ color: "#FFF" }}
+              itemStyle={{ color: "#FFF" }}
             />
-            <Line 
-              type="monotone" 
-              dataKey="value" 
-              stroke="#FFFFFF" 
-              strokeWidth={3} 
-              dot={false} 
+
+            <Line
+              type="monotone"
+              dataKey="value"
+              stroke="white"
+              strokeWidth={3}
+              dot={false}
             />
           </LineChart>
         </ResponsiveContainer>

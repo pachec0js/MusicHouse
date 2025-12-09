@@ -33,7 +33,7 @@ export default function Dashboard() {
   const [funcionariosAtivos, setFuncionariosAtivos] = useState(0);
   const [filiaisAtivas, setFiliaisAtivas] = useState(0);
 
-  // Fetch para faturamento diário
+
   useEffect(() => {
     async function fetchLucro() {
       try {

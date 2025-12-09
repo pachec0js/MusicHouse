@@ -109,7 +109,70 @@ const descobrirTipoSku = async (sku) => {
     return "404";
 };
 
+
+const faturamentoConsolidadoMatriz = async () => {
+  const daily = await executeRawQuery(
+    `SELECT DATE(data_venda) AS data, SUM(lucro) AS total
+     FROM venda
+     WHERE data_venda >= DATE(NOW() - INTERVAL 7 DAY)
+     GROUP BY DATE(data_venda)
+     ORDER BY data ASC`
+  );
+
+  const monthly = await executeRawQuery(
+    `SELECT DATE(data_venda) AS data, SUM(lucro) AS total
+     FROM venda
+     WHERE data_venda >= DATE(NOW() - INTERVAL 30 DAY)
+     GROUP BY DATE(data_venda)
+     ORDER BY data ASC`
+  );
+
+  const annual = await executeRawQuery(
+    `SELECT DATE_FORMAT(data_venda, '%Y-%m') AS mes, SUM(lucro) AS total
+     FROM venda
+     WHERE data_venda >= DATE(NOW() - INTERVAL 12 MONTH)
+     GROUP BY DATE_FORMAT(data_venda, '%Y-%m')
+     ORDER BY mes ASC`
+  );
+
+  return { daily, monthly, annual };
+};
+
+const fluxoCaixaMatriz = async () => {
+  const entradas = await executeRawQuery(
+    `SELECT 
+        DATE_FORMAT(data_venda, '%b') AS mes,
+        SUM(lucro) AS entradas
+     FROM venda
+     GROUP BY mes, MONTH(data_venda)
+     ORDER BY MONTH(data_venda)`
+  );
+
+  const saidas = await executeRawQuery(
+    `SELECT 
+        DATE_FORMAT(data_pagamento, '%b') AS mes,
+        SUM(valor) AS saidas
+     FROM despesas
+     GROUP BY mes, MONTH(data_pagamento)
+     ORDER BY MONTH(data_pagamento)`
+  );
+
+  return { entradas, saidas };
+};
+
+
+const crescimentoMatriz = async () => {
+  return await executeRawQuery(
+    `SELECT DATE(data_venda) AS date, SUM(lucro) AS value
+     FROM venda
+     WHERE data_venda >= DATE(NOW() - INTERVAL 10 DAY)
+     GROUP BY DATE(data_venda)
+     ORDER BY date ASC`
+  );
+};
+
+
 export {
     franquiasAtivas, faturamentoGlobal, listarTodosFuncionariosGlobal, listarContasPagar, listarLucroPorFilial, listarPedidosEstoque,
-    listarEstoqueMatriz, listarFiliaisAtivas, listarVendas, listarItemVendasPorSku, descobrirTipoSku
+    listarEstoqueMatriz, listarFiliaisAtivas, listarVendas, listarItemVendasPorSku, descobrirTipoSku, faturamentoConsolidadoMatriz, fluxoCaixaMatriz, crescimentoMatriz 
 }

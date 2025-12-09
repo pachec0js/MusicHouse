@@ -1,191 +1,102 @@
 "use client";
 
-import * as React from "react";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { useEffect, useState, useMemo } from "react";
+import { Area, AreaChart, CartesianGrid, XAxis, ResponsiveContainer } from "recharts";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  Card, CardContent, CardDescription, CardHeader, CardTitle
 } from "@/components/ui/card";
 import {
-  ChartConfig,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
+  ChartContainer, ChartLegend, ChartLegendContent,
+  ChartTooltip, ChartTooltipContent
 } from "@/components/ui/chart";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
 
-export const description = "An interactive area chart";
-
-// -------------------------------
-// 🔥 DADOS GERADOS AUTOMATICAMENTE COM DATAS REAIS
-// -------------------------------
-const chartData = Array.from({ length: 30 }).map((_, i) => {
-  const date = new Date();
-  date.setDate(date.getDate() - (29 - i)); // últimos 30 dias
-
-  return {
-    date: date.toISOString().split("T")[0],
-    desktop: Math.floor(Math.random() * 300) + 100,
-    mobile: Math.floor(Math.random() * 300) + 100,
-  };
-});
-
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
-  desktop: {
-    label: "Desktop",
-    color: "var(--chart-1)",
-  },
+  total: { label: "Faturamento", color: "#FFFFFF" }
 };
 
 export function FaturamentoConsolidado() {
-  const [timeRange, setTimeRange] = React.useState("daily");
+  const [timeRange, setTimeRange] = useState("daily");
+  const [data, setData] = useState([]);
 
-  const filteredData = React.useMemo(() => {
-    const now = new Date();
-    let startDate;
+  useEffect(() => {
+    async function load() {
+      const res = await fetch("http://localhost:8080/dashboardMatriz/faturamento-consolidado");
+      const json = await res.json();
+      const selected =
+        timeRange === "daily" ? json.daily :
+        timeRange === "monthly" ? json.monthly : json.annual;
 
-    switch (timeRange) {
-      case "monthly":
-        startDate = new Date(now);
-        startDate.setMonth(startDate.getMonth() - 1);
-        break;
-      case "annual":
-        startDate = new Date(now);
-        startDate.setFullYear(startDate.getFullYear() - 1);
-        break;
-      default:
-        startDate = new Date(now);
-        startDate.setDate(startDate.getDate() - 7);
-        break;
+      const formatted = selected.map(item => ({
+        ...item,
+        total: Number(item.total),
+        label:
+          item.data
+            ? new Date(item.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
+            : item.mes
+      }));
+
+      setData(formatted);
     }
 
-    return chartData.filter((item) => new Date(item.date) >= startDate);
+    load();
   }, [timeRange]);
 
   return (
     <Card className="pt-0 bg-[#003049] text-white shadow-lg rounded-lg">
-      <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-        <div className="grid flex-1 gap-1">
-          <CardTitle className="text-2xl font-bold text-white">
-            Faturamento Consolidado
-          </CardTitle>
-          <CardDescription className="text-white opacity-80">
-            Exibição do total de vendas para o período selecionado.
-          </CardDescription>
+      <CardHeader className="flex justify-between items-center border-b py-5">
+        <div>
+          <CardTitle className="text-2xl">Faturamento Consolidado</CardTitle>
+          <CardDescription className="text-white/70">Total por período</CardDescription>
         </div>
 
         <Select value={timeRange} onValueChange={setTimeRange}>
-          <SelectTrigger
-            className="hidden w-[160px] rounded-lg sm:ml-auto sm:flex bg-white text-black"
-            aria-label="Select a value"
-          >
-            <SelectValue placeholder="Selecionar Período" />
+          <SelectTrigger className="w-[150px] bg-white text-black rounded-lg">
+            <SelectValue placeholder="Período" />
           </SelectTrigger>
-          <SelectContent className="rounded-xl">
-            <SelectItem
-              value="daily"
-              className="rounded-lg data-[highlighted]:bg-[#003049] data-[highlighted]:text-white"
-            >
-              Vendas diárias
-            </SelectItem>
-            <SelectItem
-              value="monthly"
-              className="rounded-lg data-[highlighted]:bg-[#003049] data-[highlighted]:text-white"
-            >
-              Vendas mensais
-            </SelectItem>
-            <SelectItem
-              value="annual"
-              className="rounded-lg data-[highlighted]:bg-[#003049] data-[highlighted]:text-white"
-            >
-              Vendas anuais
-            </SelectItem>
+          <SelectContent>
+            <SelectItem value="daily">7 dias</SelectItem>
+            <SelectItem value="monthly">30 dias</SelectItem>
+            <SelectItem value="annual">12 meses</SelectItem>
           </SelectContent>
         </Select>
       </CardHeader>
 
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-auto h-[300px] w-full [&_text]:!fill-white [&_text]:!text-white"
-        >
-          <AreaChart data={filteredData}>
-            <defs>
-              <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="white" stopOpacity={0.6} />
-                <stop offset="95%" stopColor="white" stopOpacity={0.1} />
-              </linearGradient>
+      <CardContent className="pt-6">
+        <ChartContainer config={chartConfig} className="w-full h-[300px] [&_text]:!fill-white">
+          <ResponsiveContainer>
+            <AreaChart data={data}>
+              <defs>
+                <linearGradient id="fatFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="white" stopOpacity={0.6} />
+                  <stop offset="95%" stopColor="white" stopOpacity={0.1} />
+                </linearGradient>
+              </defs>
 
-              <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#D3D3D3" stopOpacity={0.5} />
-                <stop offset="95%" stopColor="#D3D3D3" stopOpacity={0.1} />
-              </linearGradient>
-            </defs>
+              <CartesianGrid stroke="white" strokeOpacity={0.1} />
 
-            <CartesianGrid vertical={false} stroke="white" strokeOpacity={0.2} />
+              <XAxis
+                dataKey="label"
+                tick={{ fill: "white" }}
+                tickLine={false}
+                axisLine={false}
+              />
 
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              minTickGap={32}
-              tickFormatter={(value) => {
-                const date = new Date(value);
-                return date.toLocaleDateString("pt-BR", {
-                  day: "2-digit",
-                  month: "short",
-                });
-              }}
-              tick={{ fill: "#FFFFFF" }}
-            />
+              <ChartTooltip content={<ChartTooltipContent />} />
 
-            <ChartTooltip
-              cursor={false}
-              content={
-                <ChartTooltipContent
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("pt-BR", {
-                      day: "2-digit",
-                      month: "short",
-                    });
-                  }}
-                  indicator="dot"
-                />
-              }
-            />
+              <Area
+                dataKey="total"
+                type="monotone"
+                fill="url(#fatFill)"
+                stroke="white"
+                strokeWidth={2}
+              />
 
-            <Area
-              dataKey="mobile"
-              type="natural"
-              fill="url(#fillMobile)"
-              stroke="#D3D3D3"
-              stackId="a"
-            />
-            <Area
-              dataKey="desktop"
-              type="natural"
-              fill="url(#fillDesktop)"
-              stroke="white"
-              stackId="a"
-            />
-
-            <ChartLegend content={<ChartLegendContent />} />
-          </AreaChart>
+              <ChartLegend content={<ChartLegendContent />} />
+            </AreaChart>
+          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
     </Card>

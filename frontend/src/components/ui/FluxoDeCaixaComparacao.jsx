@@ -1,94 +1,77 @@
 "use client";
 
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
+import { useEffect, useState } from "react";
+import { LineChart, Line, CartesianGrid, XAxis, ResponsiveContainer } from "recharts";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  Card, CardHeader, CardTitle, CardDescription, CardContent
 } from "@/components/ui/card";
-
 import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
+  ChartContainer, ChartTooltip, ChartTooltipContent
 } from "@/components/ui/chart";
 
-
-const chartData = [
-  { mes: "Jan", entradas: 12000, saidas: 8000 },
-  { mes: "Fev", entradas: 15000, saidas: 9000 },
-  { mes: "Mar", entradas: 17000, saidas: 11000 },
-  { mes: "Abr", entradas: 14000, saidas: 10000 },
-  { mes: "Mai", entradas: 19000, saidas: 13000 },
-  { mes: "Jun", entradas: 21000, saidas: 15000 },
-];
-
-
 const chartConfig = {
-  entradas: {
-    label: "Entradas",
-    color: "#FFFFFF",
-  },
-  saidas: {
-    label: "Saídas",
-    color: "#D3D3D3",
-  },
+  entradas: { label: "Entradas", color: "#FFFFFF" },
+  saidas: { label: "Saídas", color: "#D3D3D3" }
 };
 
 export function FluxoDeCaixaComparacao() {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    async function load() {
+      const res = await fetch("http://localhost:8080/dashboardMatriz/fluxo-caixa");
+      const json = await res.json();
+
+      const meses = new Set([
+        ...json.entradas.map(e => e.mes),
+        ...json.saidas.map(s => s.mes)
+      ]);
+
+      const merged = [...meses].map(mes => {
+        const ent = json.entradas.find(e => e.mes === mes);
+        const sai = json.saidas.find(s => s.mes === mes);
+
+        return {
+          mes,
+          entradas: ent ? Number(ent.entradas) : 0,
+          saidas: sai ? Number(sai.saidas) : 0
+        };
+      });
+
+      setData(merged);
+    }
+
+    load();
+  }, []);
+
   return (
-    <Card className="bg-[#003049] border-none text-white">
+    <Card className="bg-[#003049] text-white rounded-lg">
       <CardHeader>
-        <CardTitle className="text-white">Entradas x Saídas</CardTitle>
-        <CardDescription className="text-white/70">
-          Evolução do Fluxo de Caixa — Consolidado
+        <CardTitle>Entradas x Saídas</CardTitle>
+        <CardDescription className="text-white/80">
+          Evolução do Fluxo de Caixa — Matriz
         </CardDescription>
       </CardHeader>
 
       <CardContent>
-        <ChartContainer
-          config={chartConfig}
-          className="h-[260px] [&_text]:!fill-white [&_text]:!text-white"
-        >
-          <LineChart
-            accessibilityLayer
-            data={chartData}
-            margin={{ left: 12, right: 12 }}
-          >
-            <CartesianGrid vertical={false} stroke="#ffffff22" />
+        <ChartContainer config={chartConfig} className="w-full h-[260px]">
+          <ResponsiveContainer>
+            <LineChart data={data}>
+              <CartesianGrid stroke="#FFFFFF20" />
 
-            <XAxis
-              dataKey="mes"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tick={{ fontSize: 12 }}
-            />
+              <XAxis
+                dataKey="mes"
+                tickLine={false}
+                axisLine={false}
+                tick={{ fill: "white" }}
+              />
 
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent />}
-            />
+              <ChartTooltip content={<ChartTooltipContent />} />
 
-            <Line
-              dataKey="entradas"
-              type="monotone"
-              stroke="#FFFFFF"
-              strokeWidth={3}
-              dot={false}
-            />
-
-            <Line
-              dataKey="saidas"
-              type="monotone"
-              stroke="#D3D3D3"
-              strokeWidth={3}
-              dot={false}
-            />
-          </LineChart>
+              <Line dataKey="entradas" stroke="white" strokeWidth={3} dot={false} />
+              <Line dataKey="saidas" stroke="#D3D3D3" strokeWidth={3} dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
     </Card>

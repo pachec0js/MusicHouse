@@ -229,7 +229,7 @@ export default function PaginaListarPedidosFornecedor() {
             {isLoading ? (
                 <div className="flex justify-center items-center h-40">
                     <RefreshCw className="w-8 h-8 mr-3 animate-spin text-gray-600" />
-                    <p className="text-xl text-white">Carregando pedidos...</p>
+                    <p className="text-xl text-black">Carregando pedidos...</p>
                 </div>
             ) : pedidos.length === 0 ? (
 

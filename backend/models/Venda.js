@@ -1,4 +1,4 @@
-import { create, read, readAll, update } from '../config/database.js';
+import { create, read, readAll, update, executeRawQuery } from '../config/database.js';
 
 const criarVenda = async (vendaData) => {
   try {
@@ -38,6 +38,25 @@ const listarVendas = async (id_franquia) => {
 
 
 
+const listarVendasGeral = async () => {
+  try {
+    const sql = `
+      SELECT *
+      FROM venda
+      ORDER BY data_venda DESC
+    `;
+
+    return await executeRawQuery(sql);
+    
+  } catch (error) {
+    console.error('Erro ao listar todas as vendas:', error);
+    throw error;
+  }
+};
+
+
+
+
 const obterItemVenda = async (id_venda) => {
   try {
     return await readAll('item_venda', `id_venda = ${id_venda}`)
@@ -62,4 +81,4 @@ const obterPagamentosPorId = async (id_pagamento) =>{
 
 
 
-export { criarVenda, criarItemVenda, addLucroVenda, listarVendas, obterItemVenda, obterPagamentosPorId};
+export { criarVenda, criarItemVenda, addLucroVenda, listarVendas, obterItemVenda, obterPagamentosPorId, listarVendasGeral};
