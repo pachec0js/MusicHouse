@@ -77,6 +77,7 @@ export default function TabelaFranquia() {
     try {
       setLoading(true);
       const res = await fetch('http://localhost:8080/franquias');
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       const data = await res.json();
       const lista = Array.isArray(data) ? data : [data];
       setFranquias(lista.slice(1));
@@ -225,11 +226,40 @@ export default function TabelaFranquia() {
 
             <tbody>
               {loading ? (
-                <tr>
-                  <td colSpan="6" className="text-center p-12 text-zinc-400">
-                    Carregando...
-                  </td>
-                </tr>
+                <>
+                  {[1,2,3,4,5,7,8,9,10].map((i) => (
+                    <tr key={i} className="border-b border-zinc-800 animate-pulse">
+
+                      <td className="pl-8 py-4">
+                        <div className="h-4 w-12 bg-zinc-700/40 rounded"></div>
+                      </td>
+
+                      <td className="p-4">
+                        <div className="h-4 w-64 bg-zinc-700/40 rounded mb-2"></div>
+                        <div className="h-4 w-40 bg-zinc-700/20 rounded"></div>
+                      </td>
+
+                      <td className="p-4">
+                        <div className="h-5 w-24 bg-zinc-700/40 rounded-full"></div>
+                      </td>
+
+                      <td className="p-4">
+                        <div className="h-4 w-40 bg-zinc-700/40 rounded"></div>
+                        <div className="h-3 w-32 bg-zinc-700/30 rounded mt-1"></div>
+                      </td>
+
+                      <td className="p-4">
+                        <div className="h-5 w-16 bg-zinc-700/40 rounded-full"></div>
+                      </td>
+
+                      <td className="p-4 pr-2 flex justify-end gap-3">
+                        <div className="h-8 w-8 bg-zinc-700/40 rounded"></div>
+                        <div className="h-8 w-8 bg-zinc-700/40 rounded"></div>
+                      </td>
+
+                    </tr>
+                  ))}
+                </>
               ) : franquiasPagina.length ? (
                 franquiasPagina.map((f) => (
                   <tr

@@ -47,23 +47,23 @@ export function FluxoDeCaixaComparacao() {
   return (
     <Card className="bg-[#003049] text-white rounded-lg">
       <CardHeader>
-        <CardTitle>Entradas x Saídas</CardTitle>
-        <CardDescription className="text-white/80">
+        <CardTitle className="text-white">Entradas x Saídas</CardTitle>
+        <CardDescription className="text-white">
           Evolução do Fluxo de Caixa — Matriz
         </CardDescription>
       </CardHeader>
 
       <CardContent>
-        <ChartContainer config={chartConfig} className="w-full h-[260px]">
+        <ChartContainer config={chartConfig} className="w-full h-[260px] text-white">
           <ResponsiveContainer>
             <LineChart data={data}>
-              <CartesianGrid stroke="#FFFFFF20" />
+              <CartesianGrid stroke="#FFFFFF30" />
 
               <XAxis
                 dataKey="mes"
                 tickLine={false}
                 axisLine={false}
-                tick={{ fill: "white" }}
+                tick={{ fill: "white", fontSize: 13 }}
               />
 
               <ChartTooltip content={<ChartTooltipContent />} />

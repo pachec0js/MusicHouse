@@ -46,8 +46,8 @@ const selectStyle = {
     backgroundColor: isFocused
       ? '#C1121F'
       : isSelected
-      ? '#003049' 
-      : 'white',
+        ? '#003049'
+        : 'white',
 
     color: isFocused || isSelected ? 'white' : '#003049',
 
@@ -253,6 +253,14 @@ export default function ModalAddFuncionario({ onSuccess }) {
     setEnviado(true);
     const cookie = getCookie('token');
 
+    const formData = new FormData();
+
+    for (const key in form) {
+      if (form[key] !== null) {
+        formData.append(key, form[key]);
+      }
+    }
+
     try {
       const response = await fetch(
         `http://localhost:8080/funcionarios`,
@@ -260,17 +268,17 @@ export default function ModalAddFuncionario({ onSuccess }) {
           method: 'POST',
           headers: {
             cookie: cookie,
-            "Content-Type": "application/json",
+
           },
           cache: 'no-store',
           credentials: 'include',
-          body: JSON.stringify(form)
+          body: formData,
         }
       );
       const data = await response.json();
 
       if (response.ok) {
-        alert(`${data.mensagem} ${data.funcionarioId}`);
+
         setOpen(false);
         if (onSuccess) onSuccess();
       } else {
@@ -440,7 +448,7 @@ export default function ModalAddFuncionario({ onSuccess }) {
               <input
                 type="file"
                 accept="image/*"
-                className="flex w-full rounded-md border border-zinc-700 px-3 py-2 text-sm text-zinc-400 file:mr-4 file:py-0 file:px-2 file:rounded-sm file:border-0 file:text-xs file:font-semibold  file:text-white focus:outline-none"
+                className="flex w-full rounded-md border border-zinc-700 px-3 py-2 text-sm text-zinc-400 file:mr-4 file:py-0 file:px-2 file:rounded-sm file:border-0 file:text-xs file:font-semibold  file:text-white focus:outline-none"
                 onChange={(e) => {
                   if (e.target.files && e.target.files[0]) {
                     setForm({ ...form, fotoFuncionario: e.target.files[0] });

@@ -3,7 +3,7 @@ from faker import Faker
 import random
 from datetime import datetime, timedelta
 
-# --- CONFIGURAÇÃO DO BANCO DE DADOS ---
+
 db_config = {
     'host': '127.0.0.1',
     'user': 'root',
@@ -16,12 +16,12 @@ fake = Faker('pt_BR')
 try:
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor()
-    print("✅ Conectado ao banco de dados com sucesso!")
+    print("Conectado ao banco de dados com sucesso!")
 except Exception as e:
-    print(f"❌ Erro ao conectar: {e}")
+    print(f"Erro ao conectar: {e}")
     exit()
 
-# --- FUNÇÕES AUXILIARES ---
+
 
 def criar_franquias_novas():
     print("🏢 Criando novas franquias...")
@@ -41,7 +41,7 @@ def criar_franquias_novas():
     return ids_franquias
 
 def contratar_funcionarios(id_franquia):
-    cargos = [2, 4, 3, 3] # 1 Gerente, 1 Supervisor, 2 Caixas
+    cargos = [2, 4, 3, 3] 
     ids_funcs = []
     
     for cargo in cargos:
@@ -68,26 +68,24 @@ def encher_estoque(id_franquia, produtos_base):
         cursor.execute(sql, (id_franquia, sku, qtd, 5))
     conn.commit()
 
-# --- EXECUÇÃO DO ROTEIRO ---
 
-# 1. Criar Franquias
 novas_franquias = criar_franquias_novas()
 
-# 2. Carregar Produtos para referência
+
 cursor.execute("SELECT id_produto, sku, valor, custo_producao FROM produtos")
 todos_produtos = cursor.fetchall()
 
 if not todos_produtos:
-    print("❌ Erro: Não há produtos cadastrados.")
+    print("Erro: Não há produtos cadastrados.")
     exit()
 
-# 3. Contratar e Estocar
+
 funcionarios_caixa = [] 
 
 for id_franq in novas_franquias:
-    print(f"📦 Abastecendo Franquia ID {id_franq}...")
+    print(f"Abastecendo Franquia ID {id_franq}...")
     funcs = contratar_funcionarios(id_franq)
-    encher_estoque(id_franq, todos_produtos) # Passa a lista de produtos
+    encher_estoque(id_franq, todos_produtos)
     
     for f_id in funcs:
         cursor.execute("SELECT id_credencial FROM funcionarios WHERE id_registro = %s", (f_id,))
@@ -95,47 +93,45 @@ for id_franq in novas_franquias:
         if cred == 3:
             funcionarios_caixa.append({'id': f_id, 'franquia': id_franq})
 
-# 4. Simular o Ano de 2025 ATÉ HOJE
-agora = datetime.now() # Pega a hora exata da execução
-print(f"🚀 Simulando histórico de 01/01/2025 até HOJE ({agora})...")
+
+agora = datetime.now() 
+print(f"Simulando histórico de 01/01/2025 até HOJE ({agora})...")
 
 data_inicio = datetime(2025, 1, 1)
-delta_dias = (agora - data_inicio).days # Calcula dias passados até hoje
+delta_dias = (agora - data_inicio).days 
 
 total_vendas_geradas = 0
 
 for i in range(delta_dias + 1):
     dia_atual = data_inicio + timedelta(days=i)
     
-    # Se já passou da data/hora atual, para tudo.
+  
     if dia_atual > agora:
         break
 
-    # A cada dia, há 40% de chance de uma franquia abrir o caixa
     if random.random() < 0.4: 
         caixa_da_vez = random.choice(funcionarios_caixa)
         
-        # Define horário de funcionamento
+      
         hora_abertura = dia_atual.replace(hour=9, minute=0, second=0)
         fechamento = dia_atual.replace(hour=18, minute=0, second=0)
 
-        # Se for HOJE e ainda não são 9h da manhã, a loja não abre
+   
         if dia_atual.date() == agora.date() and agora.hour < 9:
             continue
 
-        # 1. Abrir Caixa
         sql_caixa = "INSERT INTO caixas (id_franquia, id_funcionario, status, data_abertura, data_fechamento) VALUES (%s, %s, 'fechado', %s, %s)"
         cursor.execute(sql_caixa, (caixa_da_vez['franquia'], caixa_da_vez['id'], hora_abertura, fechamento))
         id_sessao = cursor.lastrowid
         
-        # 2. Fazer vendas (simuladas)
+ 
         num_vendas = random.randint(1, 5)
         
         for _ in range(num_vendas):
-            # Gera hora aleatória da venda dentro do expediente
+           
             hora_venda = hora_abertura + timedelta(hours=random.randint(0, 8), minutes=random.randint(0, 59))
             
-            # Se a hora da venda gerada for no futuro (ex: agora é 14h e gerou 17h), corrige para agora
+       
             if hora_venda > agora:
                 hora_venda = agora
 
@@ -167,7 +163,7 @@ for i in range(delta_dias + 1):
                               VALUES (%s, %s, 1, %s, %s, %s)"""
                 cursor.execute(sql_item, (id_venda, sku, preco, lucro_item, preco))
                 
-                # Tenta baixar estoque
+         
                 sql_mov = """INSERT INTO movimentacoes_estoque (id_estoque, id_franquia, id_funcionario, tipo_movimentacao, quantidade_anterior, quantidade_movimentada, quantidade_atual, data_movimentacao)
                              VALUES ((SELECT id_estoque FROM estoque WHERE sku = %s AND id_franquia = %s LIMIT 1), %s, %s, 'saida', 10, 1, 9, %s)"""
                 try:
@@ -179,8 +175,8 @@ for i in range(delta_dias + 1):
 
     conn.commit()
 
-print(f"✨ Pronto! Simulação até {agora}.")
-print(f"📊 Total de vendas criadas: {total_vendas_geradas}")
+print(f"Pronto! Simulação até {agora}.")
+print(f"Total de vendas criadas: {total_vendas_geradas}")
 
 cursor.close()
 conn.close()

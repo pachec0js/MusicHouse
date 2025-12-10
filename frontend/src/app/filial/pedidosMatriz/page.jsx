@@ -92,10 +92,11 @@ export default function PaginaListarPedidosFornecedor() {
                 cache: 'no-store',
                 credentials: 'include',
             });
+            await new Promise((resolve) => setTimeout(resolve, 1200));
 
             const data = await response.json();
 
-            // ✅ PREVINE ERRO data.map is not a function
+            
             if (!Array.isArray(data)) {
                 console.log("API NÃO RETORNOU ARRAY:", data);
                 setPedidos([]);
@@ -227,11 +228,43 @@ export default function PaginaListarPedidosFornecedor() {
             </div>
 
             {isLoading ? (
-                <div className="flex justify-center items-center h-40">
-                    <RefreshCw className="w-8 h-8 mr-3 animate-spin text-gray-600" />
-                    <p className="text-xl text-black">Carregando pedidos...</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mt-6 animate-pulse">
+
+                    {[...Array(8)].map((_, i) => (
+                        <div
+                            key={i}
+                            className="bg-[#18181b] p-5 rounded-xl shadow-lg border border-zinc-800"
+                        >
+                            <div className="flex justify-between items-start mb-4">
+                                <div className="h-5 w-32 bg-zinc-700/40 rounded"></div>
+                                <div className="h-6 w-20 bg-zinc-700/40 rounded-full"></div>
+                            </div>
+
+                            <div className="mb-4 flex gap-2">
+                                <div className="h-4 w-20 bg-zinc-700/40 rounded"></div>
+                                <div className="h-4 w-24 bg-zinc-700/40 rounded"></div>
+                            </div>
+
+                            <div className="h-4 w-24 bg-zinc-700/40 rounded mb-2"></div>
+                            <div className="h-6 w-40 bg-zinc-700/40 rounded mb-4"></div>
+
+                            <div className="flex justify-between items-center border-t border-zinc-700/50 pt-3">
+                                <div>
+                                    <div className="h-4 w-20 bg-zinc-700/40 rounded mb-1"></div>
+                                    <div className="h-4 w-24 bg-zinc-700/40 rounded"></div>
+                                </div>
+
+                                <div className="text-right">
+                                    <div className="h-4 w-16 bg-zinc-700/40 rounded mb-1"></div>
+                                    <div className="h-6 w-10 bg-zinc-700/40 rounded"></div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+
                 </div>
             ) : pedidos.length === 0 ? (
+
 
                 <div className="flex flex-col items-center justify-center h-[50vh] text-center">
                     <PackageX className="w-16 h-16 text-zinc-800 mb-4" />

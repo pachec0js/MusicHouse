@@ -7,6 +7,8 @@ import FinanceiroCards from "@/components/FinanceiroMatriz/FinanceiroCards";
 import ModalAdicionarDespesa from "@/components/FinanceiroMatriz/ModalAdicionarDespesa";
 import TabelaFinanceiro from "@/components/FinanceiroMatriz/Tabela/TabelaFinanceiro";
 import TabelaVendasFiliais from "@/components/FinanceiroMatriz/TabelaVenda/TabelaVenda";
+import TabelaMovimentacoesEstoque from "@/components/FinanceiroMatriz/TabelaMovimentacoesEstoque/TabelaMovimentacoesEstoque"
+
 
 export default function FinanceiroPage() {
 
@@ -31,7 +33,7 @@ export default function FinanceiroPage() {
         async function carregarLucro() {
             try {
                 const res = await fetch(
-                    "http://localhost:8080/despesas/franquia/totalLucroMes", {
+                    "http://localhost:8080/despesas/matriz/totalLucroMes", {
                     cache: 'no-store',
                     credentials: 'include',
                 }
@@ -187,6 +189,9 @@ export default function FinanceiroPage() {
 
 
             <TabelaVendasFiliais></TabelaVendasFiliais>
+
+
+            <TabelaMovimentacoesEstoque></TabelaMovimentacoesEstoque>
         </div>
 
 

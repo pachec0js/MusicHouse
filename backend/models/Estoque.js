@@ -196,23 +196,53 @@ const listarPedidosFilial = async (id_franquia) => {
   }
 }
 
-
 const listarMovimentacoesEstoque = async () => {
   try {
-    const query = `
-      SELECT *
-      FROM movimentacoes_estoque
-      ORDER BY data_movimentacao DESC
+    const sql = `
+      SELECT
+        me.id_movimentacao,
+        me.id_franquia,
+        fr.cidade AS franquia_cidade,
+        me.tipo_movimentacao,
+        me.quantidade_movimentada,
+        me.data_movimentacao,
+
+        est.sku AS sku,
+
+
+        p.nome AS produto_normal,
+
+        CONCAT(pb.nome, ' (', vp.nome_cor, ')') AS produto_variacao
+
+      FROM movimentacoes_estoque me
+
+      LEFT JOIN estoque est 
+          ON est.id_estoque = me.id_estoque
+
+      LEFT JOIN franquias fr
+          ON fr.id_franquia = me.id_franquia
+
+   
+      LEFT JOIN produtos p
+          ON p.sku = est.sku
+
+      LEFT JOIN variacoes_produto vp 
+          ON vp.sku = est.sku
+
+      LEFT JOIN produtos pb
+          ON pb.id_produto = vp.id_produto
+
+      ORDER BY me.data_movimentacao DESC
     `;
 
-    const resultado = await executeRawQuery(query);
-    return resultado;
+    return await executeRawQuery(sql);
 
   } catch (error) {
-    console.error("Erro ao obter movimentações do estoque:", error);
+    console.error("Erro ao listar movimentações:", error);
     throw error;
   }
 };
+
 
 
 

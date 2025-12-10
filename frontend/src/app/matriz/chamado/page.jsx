@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import Select from 'react-select';
 import VerChamadoMatriz from '@/components/VerChamadoMatriz/VerChamadoMatriz';
-import { Eye, Loader2 } from 'lucide-react';
+import { Loader2, PackageX } from 'lucide-react';
 import ModalApontamentoFinal from "@/components/ApontamentoFinal/ApontamentoFinal";
 
 const selectStyle = {
@@ -20,30 +20,21 @@ const selectStyle = {
   }),
   singleValue: (base) => ({ ...base, color: '#697b85' }),
   placeholder: (base) => ({ ...base, color: '#b5b5b5' }),
-    option: (base, { isFocused, isSelected }) => ({
+  option: (base, { isFocused, isSelected }) => ({
     ...base,
-
     backgroundColor: isFocused
       ? '#C1121F'
       : isSelected
         ? '#003049'
         : 'white',
-
     color: isFocused || isSelected ? 'white' : '#003049',
-
     cursor: 'pointer',
-
     '&:active': {
       backgroundColor: '#003049',
       color: 'white',
     },
   }),
-
-  menu: (base) => ({
-    ...base,
-    borderRadius: '6px',
-    overflow: 'hidden',
-  }),
+  menu: (base) => ({ ...base, borderRadius: '6px', overflow: 'hidden' }),
 };
 
 const colunas = [
@@ -56,6 +47,7 @@ const colunas = [
 
 export default function TabelaChamados() {
   const [chamados, setChamados] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [filtroNome, setFiltroNome] = useState('');
   const [filtroMensagem, setFiltroMensagem] = useState('');
@@ -85,16 +77,21 @@ export default function TabelaChamados() {
 
   async function carregarChamados() {
     try {
+      setLoading(true);
       const response = await fetch("http://localhost:8080/chamados", {
         cache: 'no-store',
         credentials: 'include',
       });
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
       const data = await response.json();
       if (response.ok) {
         setChamados(data);
       }
     } catch (error) {
       console.error("Erro:", error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -102,9 +99,6 @@ export default function TabelaChamados() {
     carregarChamados();
   }, [recarregar]);
 
-  // -------------------------------------
-  //      FILTRAGEM CORRIGIDA
-  // -------------------------------------
   const chamadosFiltrados = useMemo(() => {
     return chamados.filter((c) => {
       const matchNome = c.nome_func.toLowerCase().includes(filtroNome.toLowerCase());
@@ -172,6 +166,7 @@ export default function TabelaChamados() {
           </h2>
         </div>
 
+
         <div className="bg-[#003049] border border-zinc-800 p-6 rounded-md grid grid-cols-1 md:grid-cols-4 gap-4">
 
           <div className="flex flex-col">
@@ -232,7 +227,6 @@ export default function TabelaChamados() {
           </div>
         </div>
 
-        {/* TABELA */}
         <div className="bg-[#003049] rounded-xl border border-zinc-800 overflow-hidden">
           <table className="table-auto w-full text-left border-collapse">
             <thead className="bg-[#00263A]">
@@ -262,7 +256,35 @@ export default function TabelaChamados() {
             </thead>
 
             <tbody>
-              {chamadosPagina.length ? (
+
+              {loading ? (
+                <>
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <tr key={i} className="border-b border-zinc-800 animate-pulse">
+                      <td className="p-4">
+                        <div className="h-4 w-40 bg-zinc-700/40 rounded"></div>
+                      </td>
+
+                      <td className="p-4">
+                        <div className="h-4 w-60 bg-zinc-700/40 rounded mb-2"></div>
+                        <div className="h-4 w-40 bg-zinc-700/20 rounded"></div>
+                      </td>
+
+                      <td className="p-4">
+                        <div className="h-5 w-20 bg-zinc-700/40 rounded-full"></div>
+                      </td>
+
+                      <td className="p-4">
+                        <div className="h-10 w-32 bg-zinc-700/40 rounded-md"></div>
+                      </td>
+
+                      <td className="p-4">
+                        <div className="w-8 h-8 bg-zinc-700/40 rounded"></div>
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              ) : chamadosPagina.length ? (
                 chamadosPagina.map((c) => (
                   <tr
                     key={c.id_chamado}
@@ -326,8 +348,16 @@ export default function TabelaChamados() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="text-center p-6 text-zinc-500">
-                    Nenhum chamado encontrado
+                  <td colSpan="10">
+                    <div className="flex flex-col items-center justify-center h-[40vh] text-center w-full">
+                      <PackageX className="w-16 h-16 text-white mb-4" />
+                      <p className="text-xl text-white font-semibold">
+                        Nenhum chamado encontrado
+                      </p>
+                      <p className="text-sm text-zinc-500 mt-1">
+                        Não há registros disponíveis no momento.
+                      </p>
+                    </div>
                   </td>
                 </tr>
               )}
@@ -355,9 +385,7 @@ export default function TabelaChamados() {
           </Button>
 
           <Button
-            onClick={() =>
-              setPaginaAtual((p) => Math.min(totalPaginas, p + 1))
-            }
+            onClick={() => setPaginaAtual((p) => Math.min(totalPaginas, p + 1))}
             disabled={paginaAtual === totalPaginas}
             className="bg-[#003049] text-white hover:bg-[#002437]"
           >

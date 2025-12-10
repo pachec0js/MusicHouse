@@ -85,7 +85,7 @@ export default function TabelaFuncionarios() {
         fetch('http://localhost:8080/funcionarios'),
         fetch('http://localhost:8080/franquias'),
       ]);
-
+      await new Promise((resolve) => setTimeout(resolve, 1200));
       const dataFunc = await resFunc.json();
       const dataFranq = await resFranq.json();
 
@@ -284,11 +284,52 @@ export default function TabelaFuncionarios() {
             </thead>
             <tbody>
               {loading ? (
-                <tr>
-                  <td colSpan="6" className="text-center p-12 text-zinc-400">
-                    Carregando...
-                  </td>
-                </tr>
+                <>
+                  {/* SKELETON PARA 6 LINHAS */}
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+                    <tr key={i} className="border-b border-zinc-800 animate-pulse">
+                      {/* ID */}
+                      <td className="pl-8 pr-3 py-4">
+                        <div className="h-4 w-10 bg-zinc-700/40 rounded"></div>
+                      </td>
+
+                      {/* Nome + foto */}
+                      <td className="p-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-zinc-700/40"></div>
+                          <div className="flex flex-col gap-2">
+                            <div className="h-4 w-40 bg-zinc-700/40 rounded"></div>
+                            <div className="h-3 w-28 bg-zinc-800/40 rounded"></div>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Cargo */}
+                      <td className="p-4">
+                        <div className="h-4 w-24 bg-zinc-700/40 rounded"></div>
+                      </td>
+
+                      {/* Telefone */}
+                      <td className="p-4">
+                        <div className="h-4 w-20 bg-zinc-700/40 rounded"></div>
+                      </td>
+
+                      {/* Status */}
+                      <td className="p-4">
+                        <div className="h-5 w-16 bg-zinc-700/40 rounded-full"></div>
+                      </td>
+
+                      {/* Ações */}
+                      <td className="pr-8 p-4">
+                        <div className="flex gap-3 justify-end">
+                          <div className="w-6 h-6 bg-zinc-700/40 rounded"></div>
+                          <div className="w-6 h-6 bg-zinc-700/40 rounded"></div>
+                          <div className="w-6 h-6 bg-zinc-700/40 rounded"></div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </>
               ) : funcionariosPagina.length ? (
                 funcionariosPagina.map((f) => (
                   <tr

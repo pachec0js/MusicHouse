@@ -10,6 +10,7 @@ import {
   totalLucroMensal,
   atualizarDespesa,
   atualizarDespesaParaPaga,
+  totalLucroMensalGeral
 } from '../models/Despesas.js';
 
 const listarDespesasFranquiaController = async (req, res) => {
@@ -160,6 +161,17 @@ const totalLucroMesController = async (req, res) => {
   }
 };
 
+
+const totalLucroMesControllerGeral = async (req, res) => {
+  try {
+    const totalLucro = await totalLucroMensalGeral();
+    res.status(200).json({ total_lucro_mes: totalLucro });
+  } catch (err) {
+    console.error('Erro ao obter total de lucro do mês: ', err);
+    res.status(500).json({ mensagem: 'Erro ao obter total de lucro do mês' });
+  }
+};
+
 export {
   listarDespesasFranquiaController,
   criarDespesaController,
@@ -172,4 +184,6 @@ export {
   totalLucroMesController,
   atualizarDespesaController,
   atualizarDespesaParaPagaController,
+  totalLucroMesControllerGeral,
+  
 };

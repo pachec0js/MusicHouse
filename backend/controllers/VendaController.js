@@ -7,7 +7,7 @@ import {
 } from '../models/Estoque.js';
 import { lerCadaSessao } from '../models/Caixa.js';
 import { obterFuncionarioPorId } from '../models/Funcionario.js';
-import { listarFranquiaPorId } from '../models/Franquias.js'
+
 
 const criarVendaController = async (req, res) => {
   try {
@@ -192,59 +192,35 @@ const listarVendasController = async (req, res) => {
 
 
 
-
 const listarVendasGeralController = async (req, res) => {
   try {
-  
-
-
     const vendas = await listarVendasGeral();
 
-    const vendasComItens = await Promise.all(
-      vendas.map(async (venda) => {
+    const vendasFormatadas = vendas.map(v => ({
+      id_venda: v.id_venda,
+      franquia: v.franquia,
+      funcionario: v.funcionario,
+      id_sessao_caixa: v.id_sessao_caixa,
+      valor_total: v.valor_total,
+      parcelamento: v.parcelamento,
+      lucro: v.lucro,
+      desconto: v.desconto,
+      pagamento: v.pagamento,
+      status: v.status,
+      data_venda: v.data_venda,
 
+    
+      sku: v.sku_produto || v.sku_variacao || null
+    }));
 
-        const item_venda = await obterItemVenda(venda.id_venda)
-        const skuProduto =
-          Array.isArray(item_venda) &&
-            item_venda.length > 0 &&
-            item_venda[0].sku_produto
-            ? item_venda[0].sku_produto
-            : item_venda[0]?.sku_variacao || null;
-
-
-        const funcionario = await obterFuncionarioPorId(venda.id_funcionario)
-        const pagamento = await obterPagamentosPorId(venda.id_pagamento);
-        const tipoPagamento =
-          Array.isArray(pagamento) && pagamento.length > 0
-            ? pagamento[0].tipo
-            : "Desconhecido";
-        const franquia = await listarFranquiaPorId(venda.id_franquia)
-
-        return {
-          id_venda: venda.id_venda,
-          franquia: franquia.cidade,
-          funcionario: funcionario.nome_completo,
-          id_sessao_caixa: venda.id_sessao_caixa,
-          valor_total: venda.valor_total,
-          parcelamento: venda.parcelamento,
-          lucro: venda.lucro,
-          sku: skuProduto,
-          desconto: venda.desconto,
-          pagamento: tipoPagamento,
-          status: venda.status,
-          data_venda: venda.data_venda,
-        };
-      })
-    );
-
-    return res.status(200).json(vendasComItens);
+    return res.status(200).json(vendasFormatadas);
 
   } catch (error) {
     console.error("Erro ao listar vendas:", error);
     res.status(500).json({ mensagem: "Erro ao listar vendas" });
   }
 };
+
 
 
 

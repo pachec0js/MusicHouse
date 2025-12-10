@@ -27,6 +27,8 @@ function handleCNPJMask(value) {
 
 export default function Fornecedores() {
   const [fornecedores, setFornecedores] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const [buscaNome, setBuscaNome] = useState('');
   const [buscaCNPJ, setBuscaCNPJ] = useState('');
   const [buscaEmail, setBuscaEmail] = useState('');
@@ -37,12 +39,21 @@ export default function Fornecedores() {
 
   async function pegarInfo() {
     try {
+      setLoading(true);
+
       const res = await fetch('http://localhost:8080/fornecedores');
+
+      await new Promise((resolve) => setTimeout(resolve, 1200));
       const data = await res.json();
-      console.log(data);
       setFornecedores(data);
+
+
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+
     } catch (erro) {
-      console.log('Erro ao pergar fornecedores' + erro);
+      console.log('Erro ao pegar fornecedores', erro);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -77,6 +88,7 @@ export default function Fornecedores() {
         <FornecedoresMatriz setReload={setReload} />
       </div>
 
+
       <div className="bg-[#003049] border border-zinc-800 mt-5 p-6 rounded-md grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="flex flex-col">
           <label className="text-sm text-zinc-400 mb-1">Buscar por nome</label>
@@ -84,7 +96,7 @@ export default function Fornecedores() {
             value={buscaNome}
             onChange={(e) => setBuscaNome(e.target.value)}
             placeholder="Digite o nome..."
-            className="p-2 pl-3 rounded bg-[#00263A] border border-[#5a6870] text-zinc-200 focus:border-[#fdf0d5] focus:outline-none focus:ring-0"
+            className="p-2 pl-3 rounded bg-[#00263A] border border-[#5a6870] text-zinc-200"
           />
         </div>
 
@@ -94,7 +106,7 @@ export default function Fornecedores() {
             value={buscaCNPJ}
             onChange={(e) => setBuscaCNPJ(handleCNPJMask(e.target.value))}
             placeholder="Digite o CNPJ..."
-            className="p-2 pl-3 rounded bg-[#00263A] border border-[#5a6870] text-zinc-200 focus:border-[#fdf0d5] focus:outline-none focus:ring-0"
+            className="p-2 pl-3 rounded bg-[#00263A] border border-[#5a6870] text-zinc-200"
           />
         </div>
 
@@ -104,24 +116,23 @@ export default function Fornecedores() {
             value={buscaEmail}
             onChange={(e) => setBuscaEmail(e.target.value)}
             placeholder="Digite o email..."
-            className="p-2 pl-3 rounded bg-[#00263A] border border-[#5a6870] text-zinc-200 focus:border-[#fdf0d5] focus:outline-none focus:ring-0"
+            className="p-2 pl-3 rounded bg-[#00263A] border border-[#5a6870] text-zinc-200"
           />
         </div>
 
         <div className="flex flex-col">
-          <label className="text-sm text-zinc-400 mb-1">
-            Buscar por objeto fornecido
-          </label>
+          <label className="text-sm text-zinc-400 mb-1">Buscar por objeto fornecido</label>
           <input
             value={buscaObjeto}
             onChange={(e) => setBuscaObjeto(e.target.value)}
             placeholder="Digite o objeto fornecido..."
-            className="p-2 pl-3 rounded bg-[#00263A] border border-[#5a6870] text-zinc-200 focus:border-[#fdf0d5] focus:outline-none focus:ring-0"
+            className="p-2 pl-3 rounded bg-[#00263A] border border-[#5a6870] text-zinc-200"
           />
         </div>
       </div>
 
-      <div className="bg-[#003049] rounded-xl border-3 border-zinc-800 mt-6 overflow-x-auto">
+
+      <div className="bg-[#003049] rounded-xl border border-zinc-800 mt-6 overflow-x-auto">
         <table className="w-full min-w-[900px]">
           <thead className="bg-[#00263A]">
             <tr>
@@ -129,9 +140,7 @@ export default function Fornecedores() {
                 (col, index) => (
                   <th
                     key={col}
-                    className={`${
-                      index === 0 ? 'pl-10' : 'p-4'
-                    } text-left uppercase text-xs font-bold`}
+                    className={`${index === 0 ? 'pl-10' : 'p-4'} text-left uppercase text-xs font-bold`}
                   >
                     {col}
                   </th>
@@ -139,8 +148,39 @@ export default function Fornecedores() {
               )}
             </tr>
           </thead>
+
           <tbody>
-            {itensPagina.length ? (
+
+            {loading ? (
+              <>
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+                  <tr key={i} className="border-b border-zinc-800 animate-pulse">
+                    <td className="pl-10 py-4">
+                      <div className="h-4 w-12 bg-zinc-700/40 rounded"></div>
+                    </td>
+                    <td className="p-4">
+                      <div className="h-4 w-40 bg-zinc-700/40 rounded"></div>
+                    </td>
+                    <td className="p-4">
+                      <div className="h-4 w-32 bg-zinc-700/40 rounded"></div>
+                    </td>
+                    <td className="p-4">
+                      <div className="h-4 w-48 bg-zinc-700/40 rounded"></div>
+                    </td>
+                    <td className="p-4">
+                      <div className="h-4 w-20 bg-zinc-700/40 rounded"></div>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex gap-3">
+                        <div className="w-8 h-8 bg-zinc-700/40 rounded"></div>
+                        <div className="w-8 h-8 bg-zinc-700/40 rounded"></div>
+                        <div className="w-8 h-8 bg-zinc-700/40 rounded"></div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </>
+            ) : itensPagina.length ? (
               itensPagina.map((item) => (
                 <tr
                   key={item.id_fornecedor}
@@ -160,14 +200,8 @@ export default function Fornecedores() {
                   </td>
                   <td className="p-3 flex items-center gap-3">
                     <VerFornecedorMatriz fornecedor={item} />
-                    <EditarFornecedorMatriz
-                      fornecedor={item}
-                      setReload={setReload}
-                    />
-                    <ExcluirFornecedorMatriz
-                      fornecedor={item}
-                      setReload={setReload}
-                    />
+                    <EditarFornecedorMatriz fornecedor={item} setReload={setReload} />
+                    <ExcluirFornecedorMatriz fornecedor={item} setReload={setReload} />
                   </td>
                 </tr>
               ))
@@ -182,6 +216,7 @@ export default function Fornecedores() {
         </table>
       </div>
 
+
       <div className="flex justify-end gap-3 mt-4">
         <button
           onClick={() => setPaginaAtual((p) => Math.max(1, p - 1))}
@@ -190,6 +225,7 @@ export default function Fornecedores() {
         >
           Anterior
         </button>
+
         <button
           onClick={() => setPaginaAtual((p) => Math.min(totalPaginas, p + 1))}
           disabled={paginaAtual === totalPaginas}

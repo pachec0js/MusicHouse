@@ -389,79 +389,79 @@ const listarPedidosFilialController = async (req, res) => {
 
 
 const criarMovimentacaoEstoqueController = async (req, res) => {
-    try {
-        const id_franquiaMatriz = req.usuario.id_franquia;
-        const id_funcionario = req.usuario.id_registro;
-        const id_estoque = req.params.id_estoque;
-        const id_pedido = req.params.id_pedido;
-        const pedido = await obterPedidoPorId(id_pedido);
+  try {
+    const id_franquiaMatriz = req.usuario.id_franquia;
+    const id_funcionario = req.usuario.id_registro;
+    const id_estoque = req.params.id_estoque;
+    const id_pedido = req.params.id_pedido;
+    const pedido = await obterPedidoPorId(id_pedido);
 
-        const quantidade = pedido.quantidade;
-        const id_franquiaPedido = pedido.id_franquia;
+    const quantidade = pedido.quantidade;
+    const id_franquiaPedido = pedido.id_franquia;
 
-        const estoque = await obterEstoquePorId(id_estoque);
+    const estoque = await obterEstoquePorId(id_estoque);
 
-        if (!estoque) {
-            return res.status(404).json({ mensagem: 'Estoque não encontrado.' });
-        }
-
-        // CORREÇÃO: Variável estoqueMatriz agora é declarada com 'let'
-        let estoqueMatriz = await obterEstoquePorIdMatriz(id_franquiaMatriz, estoque.sku); 
-        console.log(id_franquiaMatriz)
-
-        if (quantidade > estoqueMatriz.quantidade) {
-            return res.status(400).json({ mensagem: 'Não foi possível realizar a movimentação devido à quantidade insuficiente no estoque.' });
-        }
-
-
-      
-        const quantidade_anterior = Number(estoque.quantidade);
-        let quantidade_atual;
-
-        quantidade_atual = quantidade_anterior + Number(quantidade);
-        console.log(quantidade_atual);
-
-        const movimentacaoDataFilial = {
-            id_estoque,
-            id_franquia: id_franquiaPedido,
-            id_funcionario,
-            tipo_movimentacao: 'Entrada',
-            quantidade_anterior,
-            quantidade_movimentada: quantidade,
-            quantidade_atual,
-        };
-
-        await criarMovimentacaoEstoque(movimentacaoDataFilial);
-        await atualizarEstoque(id_franquiaPedido, estoque.sku, { quantidade: quantidade_atual });
-        await atualizarPedidoAprovado(id_pedido);
-
-
-        
-
-        const estoqueMatrizAtualizado = estoqueMatriz.quantidade - quantidade;
-        
-        
-        estoqueMatriz = await obterEstoquePorSkuEFranquia(estoque.sku, id_franquiaMatriz) 
-        
-        const movimentacaoDataMatriz = {
-          
-            id_estoque: estoqueMatriz.id_estoque, 
-            id_franquia: id_franquiaMatriz,
-            id_funcionario,
-            tipo_movimentacao: 'Saida',
-            quantidade_anterior: estoqueMatriz.quantidade, 
-            quantidade_movimentada: quantidade,
-            quantidade_atual: estoqueMatrizAtualizado,
-        };
-        
-        await criarMovimentacaoEstoque(movimentacaoDataMatriz);
-        await atualizarEstoque(id_franquiaMatriz, estoque.sku, { quantidade: estoqueMatrizAtualizado });
-
-        return res.status(201).json({ mensagem: 'Movimentação no estoque registrada com sucesso.' });
-    } catch (error) {
-        console.error('Erro ao criar movimentação no estoque:', error);
-        res.status(500).json({ mensagem: 'Erro ao criar movimentação no estoque.' });
+    if (!estoque) {
+      return res.status(404).json({ mensagem: 'Estoque não encontrado.' });
     }
+
+    // CORREÇÃO: Variável estoqueMatriz agora é declarada com 'let'
+    let estoqueMatriz = await obterEstoquePorIdMatriz(id_franquiaMatriz, estoque.sku);
+    console.log(id_franquiaMatriz)
+
+    if (quantidade > estoqueMatriz.quantidade) {
+      return res.status(400).json({ mensagem: 'Não foi possível realizar a movimentação devido à quantidade insuficiente no estoque.' });
+    }
+
+
+
+    const quantidade_anterior = Number(estoque.quantidade);
+    let quantidade_atual;
+
+    quantidade_atual = quantidade_anterior + Number(quantidade);
+    console.log(quantidade_atual);
+
+    const movimentacaoDataFilial = {
+      id_estoque,
+      id_franquia: id_franquiaPedido,
+      id_funcionario,
+      tipo_movimentacao: 'Entrada',
+      quantidade_anterior,
+      quantidade_movimentada: quantidade,
+      quantidade_atual,
+    };
+
+    await criarMovimentacaoEstoque(movimentacaoDataFilial);
+    await atualizarEstoque(id_franquiaPedido, estoque.sku, { quantidade: quantidade_atual });
+    await atualizarPedidoAprovado(id_pedido);
+
+
+
+
+    const estoqueMatrizAtualizado = estoqueMatriz.quantidade - quantidade;
+
+
+    estoqueMatriz = await obterEstoquePorSkuEFranquia(estoque.sku, id_franquiaMatriz)
+
+    const movimentacaoDataMatriz = {
+
+      id_estoque: estoqueMatriz.id_estoque,
+      id_franquia: id_franquiaMatriz,
+      id_funcionario,
+      tipo_movimentacao: 'Saida',
+      quantidade_anterior: estoqueMatriz.quantidade,
+      quantidade_movimentada: quantidade,
+      quantidade_atual: estoqueMatrizAtualizado,
+    };
+
+    await criarMovimentacaoEstoque(movimentacaoDataMatriz);
+    await atualizarEstoque(id_franquiaMatriz, estoque.sku, { quantidade: estoqueMatrizAtualizado });
+
+    return res.status(201).json({ mensagem: 'Movimentação no estoque registrada com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao criar movimentação no estoque:', error);
+    res.status(500).json({ mensagem: 'Erro ao criar movimentação no estoque.' });
+  }
 };
 
 const atualizarEstoqueMatrizController = async (req, res) => {
@@ -528,58 +528,29 @@ const atualizarPedidoRecusadoController = async (req, res) => {
 
 
 
-
 const listarMovimentacoesEstoqueController = async (req, res) => {
   try {
+    const movs = await listarMovimentacoesEstoque();
 
-    const movimentacoes = await listarMovimentacoesEstoque();
+    const formatado = movs.map(m => ({
+      id_movimentacao: m.id_movimentacao,
+      franquia: m.franquia_cidade,
+      tipo: m.tipo_movimentacao,
+      quantidade: m.quantidade_movimentada,
+      data: m.data_movimentacao,
+      sku: m.sku,
+      produto: m.produto_normal || m.produto_variacao
+    }));
 
-    const movimentacaoDetalhada = await Promise.all(
-      movimentacoes.map(async (mov) => {
-
-
-        const estoque = await obterEstoquePorId(mov.id_estoque);
-
-
-
-        let produtoNome = "";
-        let sku = estoque.sku;
-
-        let produto = await obterProdutoPorSku(sku)
-
-        if (!produto) {
-
-          const variacao = await obterVariacaoPorSku(sku);
-         
-          const produtoBase = await obterProdutoPorId(variacao.id_produto);
-
-          produtoNome = `${produtoBase.nome} (${variacao.nome_cor})`;
-        } else {
-
-          const produto = await obterProdutoPorSku(sku);
-          produtoNome = produto.nome;
-        }
-
-        return {
-          id_movimentacao: mov.id_movimentacao,
-          tipo: mov.tipo_movimentacao,
-          quantidade: mov.quantidade_movimentada,
-          data: mov.data_movimentacao,
-          sku: sku,
-          produto: produtoNome
-        };
-      })
-    );
-
-    res.status(200).json(movimentacaoDetalhada);
+    return res.status(200).json(formatado);
 
   } catch (error) {
     console.error("Erro ao obter movimentações do estoque", error);
-    res.status(500).json({
-      mensagem: "Erro ao obter movimentações do estoque"
-    });
+    res.status(500).json({ mensagem: "Erro ao obter movimentações do estoque" });
   }
 };
+
+
 
 
 

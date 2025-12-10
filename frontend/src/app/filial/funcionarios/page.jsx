@@ -44,6 +44,7 @@ export default function TabelaFuncionarios() {
         }
 
         );
+        await new Promise((resolve) => setTimeout(resolve, 1200));
         const data = await res.json();
         setFuncionarios(data);
       } catch (error) {
@@ -89,16 +90,27 @@ export default function TabelaFuncionarios() {
 
   return (
     <div className="min-h-screen text-zinc-200 p-4">
-      {/* HEADER */}
-      <div className="flex justify-between items-center mb-10">
-        <div>
-          <h1 className="text-4xl font-bold text-black">Funcionários</h1>
-          <h2 className="text-lg text-gray-600 mt-1">
-            Gerencie os colaboradores da franquia, visualize cargos, status e detalhes de cada funcionário.
-          </h2>
-        </div>
-        <DialogCriarFuncionario />
-      </div>
+
+<div className="
+  flex flex-col 
+  md:flex-row 
+  md:items-center 
+  md:justify-between 
+  gap-4 
+  mb-10
+">
+  <div className="text-center md:text-left">
+    <h1 className="text-3xl md:text-4xl font-bold text-black">Funcionários</h1>
+    <h2 className="text-base md:text-lg text-gray-600 mt-1">
+      Gerencie os colaboradores da franquia, visualize cargos, status e detalhes de cada funcionário.
+    </h2>
+  </div>
+
+  <div className="flex justify-center md:justify-end">
+    <DialogCriarFuncionario />
+  </div>
+</div>
+
 
       <FiltrosFuncionarios
         busca={busca}
@@ -142,9 +154,53 @@ export default function TabelaFuncionarios() {
 
           <tbody>
             {carregando ? (
-              <tr>
-                <td colSpan="6" className="p-10 text-center text-zinc-400">Carregando...</td>
-              </tr>
+              <>
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <tr key={i} className="border-b border-zinc-800 animate-pulse">
+
+   
+                    <td className="pl-8 py-4">
+                      <div className="h-4 w-10 bg-zinc-700/40 rounded"></div>
+                    </td>
+
+
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+
+                        <div className="w-10 h-10 rounded-full bg-zinc-700/40"></div>
+
+                        <div className="flex flex-col gap-2">
+
+                          <div className="h-4 w-40 bg-zinc-700/40 rounded"></div>
+
+                          <div className="h-3 w-32 bg-zinc-700/30 rounded"></div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="p-4">
+                      <div className="h-6 w-24 bg-zinc-700/40 rounded-full"></div>
+                    </td>
+
+
+                    <td className="p-4">
+                      <div className="h-4 w-24 bg-zinc-700/40 rounded"></div>
+                    </td>
+
+
+                    <td className="p-4">
+                      <div className="h-5 w-20 bg-zinc-700/40 rounded-full"></div>
+                    </td>
+
+                    <td className="p-4 flex items-center gap-3">
+                      <div className="w-8 h-8 bg-zinc-700/40 rounded"></div>
+                      <div className="w-8 h-8 bg-zinc-700/40 rounded"></div>
+                      <div className="w-8 h-8 bg-zinc-700/40 rounded"></div>
+                    </td>
+
+                  </tr>
+                ))}
+              </>
             ) : funcionariosPagina.length ? (
               funcionariosPagina.map((f) => (
                 <tr

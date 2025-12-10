@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 // Assumindo que Card, CardContent, CardTitle são componentes estilizados,
 // mas vamos focar na estilização Tailwind aqui.
 import { Button } from '@/components/ui/button';
-import { CheckCircle, XCircle, Tag, Search, CornerDownRight, RefreshCw, AlertTriangle } from "lucide-react"; // Adicionado AlertTriangle para Prioridade
+import { PackageX, Tag, Search, CornerDownRight, RefreshCw, AlertTriangle } from "lucide-react"; // Adicionado AlertTriangle para Prioridade
 import DialogAceitarPedidoFilial from '@/components/EstoqueMatriz/DialogAceitarPedidoFIlial.jsx'
 import DialogRecusarPedidoFilial from '@/components/EstoqueMatriz/DialogRecusarPedidoFilial.jsx'
 import Select from "react-select";
@@ -92,7 +92,9 @@ export default function PedidosFiliais() {
         setLoading(true);
         try {
             const response = await fetch("http://localhost:8080/estoque/pedidosMatriz");
+            await new Promise((resolve) => setTimeout(resolve, 1200));
             const data = await response.json();
+
 
             const pedidosArray = Array.isArray(data) ? data : data.pedidos || [];
 
@@ -109,22 +111,22 @@ export default function PedidosFiliais() {
         fetchPedidos();
     }, []);
 
-    // 2. Lógica de FILTRAGEM (Atualizada para incluir Prioridade)
+
     const filteredPedidos = useMemo(() => {
         let result = pedidos;
         const lowerSearchTerm = searchTerm.toLowerCase();
 
-        // Filtro por STATUS
+   
         if (statusFilter !== 'Todos') {
             result = result.filter(pedido => pedido.status === statusFilter);
         }
 
-        // NOVO: Filtro por PRIORIDADE
+   
         if (prioridadeFilter !== 'Todos') {
             result = result.filter(pedido => pedido.prioridade === prioridadeFilter);
         }
 
-        // Filtro por TERMO DE BUSCA (ID, Produto, SKU)
+      
         if (lowerSearchTerm) {
             result = result.filter(pedido => {
                 const idMatch = String(pedido.id_pedido).toLowerCase().includes(lowerSearchTerm);
@@ -136,14 +138,14 @@ export default function PedidosFiliais() {
         }
 
         return result;
-    }, [pedidos, searchTerm, statusFilter, prioridadeFilter]); // Adicionado prioridadeFilter
+    }, [pedidos, searchTerm, statusFilter, prioridadeFilter]); 
 
-    // 3. Reset da Paginação ao Mudar Filtros (Atualizada para incluir Prioridade)
+ 
     useEffect(() => {
         setPaginaAtual(1);
-    }, [searchTerm, statusFilter, prioridadeFilter]); // Adicionado prioridadeFilter
+    }, [searchTerm, statusFilter, prioridadeFilter]); 
 
-    // 4. Lógica de PAGINAÇÃO (Inalterada)
+
     const totalPaginas = Math.ceil(filteredPedidos.length / itensPorPagina);
 
     const itensPagina = useMemo(() => {
@@ -151,16 +153,16 @@ export default function PedidosFiliais() {
         return filteredPedidos.slice(inicio, inicio + itensPorPagina);
     }, [paginaAtual, filteredPedidos]);
 
-    // Handler para limpar todos os filtros (Atualizado para incluir Prioridade)
+
     const handleResetFilters = () => {
         setSearchTerm('');
         setStatusFilter('Todos');
-        setPrioridadeFilter('Todos'); // NOVO: Reset da prioridade
+        setPrioridadeFilter('Todos'); 
         setPaginaAtual(1);
     };
 
 
-    // 5. Renderização
+
     return (
         <div className="p-4 min-h-screen">
             <h1 className="text-4xl font-extrabold text-[#003049]"> Pedidos de Estoque Matriz</h1>
@@ -202,82 +204,152 @@ export default function PedidosFiliais() {
 
 
             {loading ? (
-                <div className="text-center p-8 text-xl text-gray-600">
-                    <RefreshCw className="w-6 h-6 mr-2 animate-spin inline-block" /> Carregando pedidos...
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 animate-pulse">
+
+                    {[...Array(6)].map((_, i) => (
+                        <div
+                            key={i}
+                            className="bg-[#fdfdfd] border-t-4 border-[#003049] shadow-xl rounded-lg p-5"
+                        >
+
+                            <div className="h-6 w-40 bg-zinc-300/60 rounded mb-4"></div>
+
+
+                            <div className="mb-4">
+                                <div className="h-4 w-20 bg-zinc-300/50 rounded mb-1"></div>
+                                <div className="h-5 w-52 bg-zinc-300/50 rounded"></div>
+                            </div>
+
+                            <div className="space-y-3 border-t border-zinc-300/40 pt-4">
+
+                                <div className="h-4 w-32 bg-zinc-300/50 rounded"></div>
+                                <div className="h-4 w-40 bg-zinc-300/40 rounded"></div>
+
+                                <div className="h-4 w-28 bg-zinc-300/50 rounded"></div>
+                                <div className="h-4 w-20 bg-zinc-300/40 rounded"></div>
+
+                                <div className="h-4 w-48 bg-zinc-300/40 rounded"></div>
+                            </div>
+
+                            <div className="flex gap-3 mt-6 pt-4 border-t border-zinc-300/40">
+                                <div className="h-10 w-24 bg-zinc-300/60 rounded"></div>
+                                <div className="h-10 w-24 bg-zinc-300/40 rounded"></div>
+                            </div>
+                        </div>
+                    ))}
+
                 </div>
             ) : (
+
                 <>
-                    {/* Exibe o número de pedidos encontrados após a filtragem */}
+
                     <p className="text-sm text-gray-600 mb-4">
                         {filteredPedidos.length} pedidos encontrados
                     </p>
 
-                    {/* Visualização dos Cards */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    <div className="mt-6">
                         {itensPagina.length === 0 ? (
-                            <p className="text-center col-span-full text-xl text-gray-500 p-8 bg-white rounded-lg shadow">
-                                Nenhum pedido encontrado com os filtros aplicados.
-                            </p>
+
+                            <div className="flex w-full min-h-[60vh] items-center justify-center">
+                                <div className="flex flex-col items-center text-center">
+                                    <PackageX className="w-16 h-16 text-[#003049] mb-4" />
+
+                                    <p className="text-xl text-[#003049] font-medium">
+                                        Nenhum pedido encontrado.
+                                    </p>
+
+                                    <p className="text-sm text-zinc-600 mt-1">
+                                        Não há registros disponíveis no momento.
+                                    </p>
+                                </div>
+                            </div>
                         ) : (
-                            itensPagina.map((pedido) => (
-                                <div key={pedido.id_pedido} className="bg-white border-t-4 border-[#003049] shadow-xl rounded-lg overflow-hidden transition duration-300 hover:shadow-2xl">
-                                    <div className="p-5">
 
-                                        {/* Status e ID do Pedido */}
-                                        <div className="flex justify-between items-start mb-3 border-b pb-2">
-                                            <h3 className="text-xl font-bold text-[#003049]">Pedido #{pedido.id_pedido}</h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {itensPagina.map((pedido) => (
+                                    <div
+                                        key={pedido.id_pedido}
+                                        className="bg-white border-t-4 border-[#003049] shadow-xl rounded-lg overflow-hidden transition duration-300 hover:shadow-2xl"
+                                    >
+                                        <div className="p-5">
 
-                                        </div>
 
-                                        {/* Informações da Franquia */}
-                                        <div className="mb-3">
-                                            <p className="text-sm text-gray-500">Filial:</p>
-                                            <p className="font-semibold text-lg text-gray-800">
-                                                {pedido.franquia?.rua || 'Endereço N/A'}, {pedido.franquia?.cidade || 'Cidade N/A'}
-                                            </p>
-                                        </div>
+                                            <div className="flex justify-between items-start mb-3 border-b pb-2">
+                                                <h3 className="text-xl font-bold text-[#003049]">
+                                                    Pedido #{pedido.id_pedido}
+                                                </h3>
+                                            </div>
 
-                                        {/* Detalhes do Produto */}
-                                        <div className="text-sm space-y-1 border-t pt-3">
-                                            <p>Produto: <strong className="text-gray-900">{pedido.produto?.nome || 'N/A'}</strong></p>
-                                            <p className="flex items-center">
-                                                <Tag className="w-4 h-4 mr-1 text-gray-400" /> Categoria: <strong>{pedido.produto?.categoria || 'N/A'}</strong>
-                                            </p>
-                                            <p>
-                                                <CornerDownRight className="w-4 h-4 mr-1 text-gray-400 inline-block" /> SKU: <strong className="text-[#003049]">{pedido.produto?.sku || 'N/A'}</strong>
-                                            </p>
-                                            <p>Quantidade: <strong className="text-red-600">{pedido.quantidade}</strong></p>
-                                            <p className="flex items-center">
-                                                <AlertTriangle className="w-4 h-4 mr-1 text-yellow-600" />
-                                                Prioridade: <strong className="ml-1">{pedido.prioridade}</strong>
-                                            </p>
-                                            <p>Observação: <span className="text-gray-500 italic">{pedido.observacao}</span></p>
-                                        </div>
 
-                                        {/* Botões de Ação */}
-                                        <div className="flex gap-2 mt-4 pt-4 border-t">
-                                            <DialogAceitarPedidoFilial
-                                                onAtualizado={fetchPedidos}
-                                                id_pedido={pedido.id_pedido}
-                                                id_estoque={pedido.id_estoque}
-                                                franquia={pedido.franquia?.rua}
-                                                quantidade={pedido.quantidade}
-                                            >
+                                            <div className="mb-3">
+                                                <p className="text-sm text-gray-500">Filial:</p>
+                                                <p className="font-semibold text-lg text-gray-800">
+                                                    {pedido.franquia?.rua || "Endereço N/A"},{" "}
+                                                    {pedido.franquia?.cidade || "Cidade N/A"}
+                                                </p>
+                                            </div>
 
-                                            </DialogAceitarPedidoFilial>
 
-                                            <DialogRecusarPedidoFilial
-                                                onRecusado={fetchPedidos}
-                                                id_pedido={pedido.id_pedido}
-                                                franquia={pedido.franquia?.rua}
-                                                quantidade={pedido.quantidade}
-                                            >
+                                            <div className="text-sm space-y-1 border-t pt-3">
+                                                <p>
+                                                    Produto:{" "}
+                                                    <strong className="text-gray-900">
+                                                        {pedido.produto?.nome || "N/A"}
+                                                    </strong>
+                                                </p>
 
-                                            </DialogRecusarPedidoFilial>
+                                                <p className="flex items-center">
+                                                    <Tag className="w-4 h-4 mr-1 text-gray-400" /> Categoria:{" "}
+                                                    <strong>{pedido.produto?.categoria || "N/A"}</strong>
+                                                </p>
+
+                                                <p>
+                                                    <CornerDownRight className="w-4 h-4 mr-1 text-gray-400 inline-block" />{" "}
+                                                    SKU:{" "}
+                                                    <strong className="text-[#003049]">
+                                                        {pedido.produto?.sku || "N/A"}
+                                                    </strong>
+                                                </p>
+
+                                                <p>
+                                                    Quantidade:{" "}
+                                                    <strong className="text-red-600">{pedido.quantidade}</strong>
+                                                </p>
+
+                                                <p className="flex items-center">
+                                                    <AlertTriangle className="w-4 h-4 mr-1 text-yellow-600" />
+                                                    Prioridade: <strong className="ml-1">{pedido.prioridade}</strong>
+                                                </p>
+
+                                                <p>
+                                                    Observação:{" "}
+                                                    <span className="text-gray-500 italic">
+                                                        {pedido.observacao || "Nenhuma observação"}
+                                                    </span>
+                                                </p>
+                                            </div>
+
+                                            <div className="flex gap-2 mt-4 pt-4 border-t">
+                                                <DialogAceitarPedidoFilial
+                                                    onAtualizado={fetchPedidos}
+                                                    id_pedido={pedido.id_pedido}
+                                                    id_estoque={pedido.id_estoque}
+                                                    franquia={pedido.franquia?.rua}
+                                                    quantidade={pedido.quantidade}
+                                                />
+
+                                                <DialogRecusarPedidoFilial
+                                                    onRecusado={fetchPedidos}
+                                                    id_pedido={pedido.id_pedido}
+                                                    franquia={pedido.franquia?.rua}
+                                                    quantidade={pedido.quantidade}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))
+                                ))}
+                            </div>
                         )}
                     </div>
 

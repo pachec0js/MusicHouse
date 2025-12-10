@@ -32,8 +32,8 @@ const selectStyle = {
     backgroundColor: isFocused
       ? "#C1121F"
       : isSelected
-      ? "#003049"
-      : "white",
+        ? "#003049"
+        : "white",
     color: isFocused || isSelected ? "white" : "#003049",
     cursor: "pointer",
     "&:active": {
@@ -72,11 +72,10 @@ export default function estoqueFilial() {
     }
   }
 
-  // ⭐⭐⭐ RESETAR PARA PRIMEIRA PÁGINA SE QUALQUER FILTRO MUDAR
   useEffect(() => {
     setPaginaAtual(1);
   }, [busca, skuFiltro, categoriaFiltro, estoqueFiltro]);
-  // ⭐⭐⭐
+
 
   useEffect(() => {
     async function carregar() {
@@ -92,6 +91,7 @@ export default function estoqueFilial() {
             credentials: "include",
           }
         );
+        await new Promise((resolve) => setTimeout(resolve, 1200));
 
         const data = await res.json();
         setEstoque(data || []);
@@ -128,8 +128,8 @@ export default function estoqueFilial() {
         estoqueFiltro === "Todos"
           ? true
           : estoqueFiltro === "Com estoque"
-          ? item.quantidade > 0
-          : item.quantidade === 0;
+            ? item.quantidade > 0
+            : item.quantidade === 0;
 
       return matchNome && matchSku && matchCategoria && matchEstoque;
     });
@@ -164,7 +164,7 @@ export default function estoqueFilial() {
       </p>
 
       <div className="bg-[#003049] border border-zinc-800 mt-5 p-6 rounded-md grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* BUSCA */}
+    
         <div className="flex flex-col">
           <label className="text-sm text-zinc-400 mb-1">Buscar produto</label>
           <input
@@ -175,7 +175,6 @@ export default function estoqueFilial() {
           />
         </div>
 
-        {/* SKU */}
         <div className="flex flex-col">
           <label className="text-sm text-zinc-400 mb-1">Buscar SKU</label>
           <input
@@ -186,7 +185,6 @@ export default function estoqueFilial() {
           />
         </div>
 
-        {/* CATEGORIA */}
         <div className="flex flex-col">
           <label className="text-sm text-zinc-400 mb-1">Categoria</label>
           <Select
@@ -198,7 +196,6 @@ export default function estoqueFilial() {
           />
         </div>
 
-        {/* ESTOQUE */}
         <div className="flex flex-col">
           <label className="text-sm text-zinc-400 mb-1">Estoque</label>
           <Select
@@ -225,9 +222,8 @@ export default function estoqueFilial() {
                 <th
                   key={col.label}
                   onClick={() => col.key && ordenar(col.key)}
-                  className={`${index === 0 ? "pl-10" : "p-4"} text-left uppercase text-xs font-bold ${
-                    col.key ? "cursor-pointer select-none" : ""
-                  }`}
+                  className={`${index === 0 ? "pl-10" : "p-4"} text-left uppercase text-xs font-bold ${col.key ? "cursor-pointer select-none" : ""
+                    }`}
                 >
                   {col.label}
                   {col.key && ordenarPor === col.key && (
@@ -240,12 +236,39 @@ export default function estoqueFilial() {
 
           <tbody>
             {carregando ? (
-              <tr>
-                <td colSpan="5" className="text-center p-6 text-zinc-500">
-                  Carregando...
-                </td>
-              </tr>
+              <>
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <tr key={i} className="border-b border-zinc-800">
+
+
+                    <td className="pl-10 p-4">
+                      <div className="h-4 w-16 bg-[#012f54] rounded animate-pulse"></div>
+                    </td>
+
+
+                    <td className="p-4">
+                      <div className="h-4 w-48 bg-[#012f54] rounded animate-pulse"></div>
+                    </td>
+
+
+                    <td className="p-4">
+                      <div className="h-5 w-24 bg-[#012f54] rounded-full animate-pulse"></div>
+                    </td>
+
+                    <td className="p-4">
+                      <div className="h-4 w-10 bg-[#012f54] rounded animate-pulse"></div>
+                    </td>
+
+
+                    <td className="p-4">
+                      <div className="h-8 w-16 bg-[#012f54] rounded animate-pulse"></div>
+                    </td>
+
+                  </tr>
+                ))}
+              </>
             ) : itensPagina.length ? (
+
               itensPagina.map((item) => (
                 <tr
                   key={item.sku}
@@ -288,8 +311,7 @@ export default function estoqueFilial() {
           </tbody>
         </table>
       </div>
-
-      {/* PAGINAÇÃO */}
+=
       <div className="flex justify-end gap-3 mt-4">
         <button
           onClick={() => setPaginaAtual((p) => Math.max(1, p - 1))}

@@ -108,27 +108,37 @@ const obterFuncionarioPorIdController = async (req, res) => {
     console.error(`Erro ao obter funcionario: `, err);
     res.status(500).json({ mensagem: 'Erro ao obter funcionario' });
   }
-};
-
-const criarFuncionarioController = async (req, res) => {
+}; const criarFuncionarioController = async (req, res) => {
   // if (!req.usuario.id) {
-  //   return res.status(401).json({ mensagem: 'Usuário não autenticado' });
+  //   return res.status(401).json({ mensagem: 'Usuário não autenticado' });
   // }
 
 
   try {
-    const {
+    let {
       nome_completo,
       cpf,
       rg,
-      data_nascimento,
+      data_nascimento, // Exemplo: "11091989"
       sexo,
       estado_civil,
       email,
       telefone,
-      franquia ,
+      franquia,
       credencial,
     } = req.body;
+
+
+
+    if (data_nascimento && data_nascimento.length === 8) {
+      const dia = data_nascimento.substring(0, 2); 
+      const mes = data_nascimento.substring(2, 4); 
+      const ano = data_nascimento.substring(4, 8); 
+
+
+      data_nascimento = `${ano}-${mes}-${dia}`; 
+    }
+
 
     let fotoPerfil = null;
     if (req.file) {
@@ -145,7 +155,7 @@ const criarFuncionarioController = async (req, res) => {
       nome_completo,
       cpf: Number(cpf),
       rg,
-      data_nascimento,
+      data_nascimento, 
       sexo,
       estado_civil,
       email,
@@ -173,7 +183,6 @@ const criarFuncionarioController = async (req, res) => {
     res.status(500).json({ mensagem: 'Erro ao criar Funcionario' });
   }
 };
-
 const atualizarFuncionarioController = async (req, res) => {
   try {
     const id_funcionario = req.params.id_funcionario;

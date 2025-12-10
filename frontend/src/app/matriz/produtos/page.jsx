@@ -33,25 +33,20 @@ const selectStyle = {
     ...base,
     color: '#b5b5b5',
   }),
-    option: (base, { isFocused, isSelected }) => ({
+  option: (base, { isFocused, isSelected }) => ({
     ...base,
-
     backgroundColor: isFocused
       ? '#C1121F'
       : isSelected
         ? '#003049'
         : 'white',
-
     color: isFocused || isSelected ? 'white' : '#003049',
-
     cursor: 'pointer',
-
     '&:active': {
       backgroundColor: '#003049',
       color: 'white',
     },
   }),
-
   menu: (base) => ({
     ...base,
     borderRadius: '6px',
@@ -60,12 +55,12 @@ const selectStyle = {
 };
 
 const colunas = [
-  { label: 'sku', key: 'sku' },
-  { label: 'id Prod', key: 'id_produto' },
-  { label: 'nome', key: 'nome' },
-  { label: 'categoria', key: 'categoria' },
-  { label: 'preco', key: 'valor' },
-  { label: 'custo de produção', key: 'custo_producao' },
+  { label: 'SKU', key: 'sku' },
+  { label: 'ID Prod', key: 'id_produto' },
+  { label: 'Nome', key: 'nome' },
+  { label: 'Categoria', key: 'categoria' },
+  { label: 'Preço', key: 'valor' },
+  { label: 'Custo', key: 'custo_producao' },
 ];
 
 export default function TabelaPremium() {
@@ -79,17 +74,14 @@ export default function TabelaPremium() {
   const [recarregar, setRecarregar] = useState(false);
   const itensPorPagina = 10;
 
-
-useEffect(() => {
-  setPaginaAtual(1);
-}, [skuFilter, busca, idFilter, categoriaFiltro]);
-
+  useEffect(() => {
+    setPaginaAtual(1);
+  }, [skuFilter, busca, idFilter, categoriaFiltro]);
 
   async function carregarDados() {
     try {
-      const response = await fetch(
-        'http://localhost:8080/produtos/matrizprodutos'
-      );
+      const response = await fetch('http://localhost:8080/produtos/matrizprodutos');
+      await new Promise((resolve) => setTimeout(resolve, 1200));
       const data = await response.json();
       setProdutos(data);
     } catch (error) {
@@ -106,14 +98,10 @@ useEffect(() => {
   const produtosFiltrados = useMemo(() => {
     return produtos.filter((p) => {
       const matchSKU =
-        skuFilter === '' ||
-        String(p.sku).toLowerCase().includes(skuFilter.toLowerCase());
-
+        skuFilter === '' || String(p.sku).toLowerCase().includes(skuFilter.toLowerCase());
       const matchNome = p.nome.toLowerCase().includes(busca.toLowerCase());
-      const matchCategoria =
-        categoriaFiltro === 'Todas' || p.categoria === categoriaFiltro;
-      const matchID =
-        idFilter === '' || String(p.id_produto).includes(idFilter);
+      const matchCategoria = categoriaFiltro === 'Todas' || p.categoria === categoriaFiltro;
+      const matchID = idFilter === '' || String(p.id_produto).includes(idFilter);
 
       return matchSKU && matchNome && matchCategoria && matchID;
     });
@@ -134,16 +122,12 @@ useEffect(() => {
     return [...produtosFiltrados].sort((a, b) => {
       const valA =
         sortConfig.key === 'valor' || sortConfig.key === 'custo_producao'
-          ? Number(
-              String(a[sortConfig.key]).replace(/\./g, '').replace(',', '.')
-            )
+          ? Number(String(a[sortConfig.key]).replace(/\./g, '').replace(',', '.'))
           : a[sortConfig.key];
 
       const valB =
         sortConfig.key === 'valor' || sortConfig.key === 'custo_producao'
-          ? Number(
-              String(b[sortConfig.key]).replace(/\./g, '').replace(',', '.')
-            )
+          ? Number(String(b[sortConfig.key]).replace(/\./g, '').replace(',', '.'))
           : b[sortConfig.key];
 
       if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
@@ -154,10 +138,7 @@ useEffect(() => {
 
   const totalPaginas = Math.ceil(produtosOrdenados.length / itensPorPagina);
   const inicio = (paginaAtual - 1) * itensPorPagina;
-  const produtosPagina = produtosOrdenados.slice(
-    inicio,
-    inicio + itensPorPagina
-  );
+  const produtosPagina = produtosOrdenados.slice(inicio, inicio + itensPorPagina);
 
   return (
     <div className="min-h-screen p-6 text-zinc-200">
@@ -172,6 +153,7 @@ useEffect(() => {
           <CriarProduto setRecarregar={setRecarregar} />
         </div>
 
+        {/* FILTROS */}
         <div className="bg-[#003049] border border-zinc-800 p-6 rounded-md grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="flex flex-col">
             <label className="mb-2 text-sm text-zinc-400">Buscar por SKU</label>
@@ -216,6 +198,7 @@ useEffect(() => {
           </div>
         </div>
 
+        {/* 📦 TABELA */}
         <div className="bg-[#003049] rounded-xl border-3 border-zinc-800 overflow-hidden">
           <table className="w-full">
             <thead className="bg-[#00263A]">
@@ -224,9 +207,8 @@ useEffect(() => {
                   <th
                     key={col.label}
                     onClick={() => ordenar(col.key)}
-                    className={`${
-                      index === 0 ? 'pl-10' : index === 3 ? 'pl-4' : 'p-4'
-                    } text-left uppercase text-xs font-bold cursor-pointer select-none`}
+                    className={`${index === 0 ? 'pl-10' : index === 3 ? 'pl-4' : 'p-4'} 
+                      text-left uppercase text-xs font-bold cursor-pointer select-none`}
                   >
                     {col.label}
                     {sortConfig.key === col.key && (
@@ -236,14 +218,43 @@ useEffect(() => {
                     )}
                   </th>
                 ))}
-                <th className="p-4 text-left uppercase text-xs font-bold">
-                  Ações
-                </th>
+                <th className="p-4 text-left uppercase text-xs font-bold">Ações</th>
               </tr>
             </thead>
 
             <tbody>
-              {produtosPagina.length ? (
+              {/* 🔵 SKELETON PREMIUM */}
+              {produtos.length === 0 ? (
+                Array.from({ length: 10 }).map((_, i) => (
+                  <tr key={i} className="border-b border-zinc-800">
+                    <td className="pl-10 p-4">
+                      <div className="h-4 w-20 bg-[#012f54] rounded animate-pulse"></div>
+                    </td>
+                    <td className="p-4">
+                      <div className="h-4 w-10 bg-[#012f54] rounded animate-pulse"></div>
+                    </td>
+                    <td className="p-4">
+                      <div className="h-4 w-48 bg-[#012f54] rounded animate-pulse mb-2"></div>
+                      <div className="h-3 w-32 bg-[#012f54] rounded animate-pulse"></div>
+                    </td>
+                    <td className="p-4">
+                      <div className="h-5 w-24 bg-[#012f54] rounded-full animate-pulse"></div>
+                    </td>
+                    <td className="p-4">
+                      <div className="h-4 w-16 bg-[#012f54] rounded animate-pulse"></div>
+                    </td>
+                    <td className="p-4">
+                      <div className="h-4 w-16 bg-[#012f54] rounded animate-pulse"></div>
+                    </td>
+                    <td className="p-4 flex items-center gap-3">
+                      <div className="h-8 w-8 bg-[#012f54] rounded animate-pulse"></div>
+                      <div className="h-8 w-8 bg-[#012f54] rounded animate-pulse"></div>
+                      <div className="h-8 w-8 bg-[#012f54] rounded animate-pulse"></div>
+                      <div className="h-8 w-8 bg-[#012f54] rounded animate-pulse"></div>
+                    </td>
+                  </tr>
+                ))
+              ) : produtosPagina.length ? (
                 produtosPagina.map((p) => (
                   <tr
                     key={p.id_produto}
@@ -253,9 +264,7 @@ useEffect(() => {
                       <Barcode className="size-4" /> {p.sku}
                     </td>
                     <td className="ml-5 pr-3 py-3">
-                      <div className="flex justify-center">
-                        # {p.id_produto}
-                      </div>
+                      <div className="flex justify-center"># {p.id_produto}</div>
                     </td>
                     <td className="p-3 max-w-[240px]">
                       <p className="font-semibold w-65 truncate">{p.nome}</p>
@@ -285,14 +294,8 @@ useEffect(() => {
                     <td className="p-3 flex items-center gap-3">
                       <VerProdutoDialog produto={p} />
                       <DialogCriarVaria produto={p} />
-                      <EditarProdutoDialog
-                        produto={p}
-                        setRecarregar={setRecarregar}
-                      />
-                      <ExcluirProdutoVariacao
-                        prod={p}
-                        setRecarregar={setRecarregar}
-                      />
+                      <EditarProdutoDialog produto={p} setRecarregar={setRecarregar} />
+                      <ExcluirProdutoVariacao prod={p} setRecarregar={setRecarregar} />
                     </td>
                   </tr>
                 ))
@@ -307,6 +310,7 @@ useEffect(() => {
           </table>
         </div>
 
+        {/* PAGINAÇÃO */}
         <div className="flex justify-end gap-3">
           <Button
             onClick={() => setPaginaAtual((p) => Math.max(1, p - 1))}

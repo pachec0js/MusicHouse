@@ -243,7 +243,7 @@ export default function Dashboard() {
           </div>
           <div className="mt-5 text-2xl font-bold text-gray-900 flex items-center gap-2">{funcionariosAtivos != 0 ? funcionariosAtivos : <Spinner />} Funcionários</div>
         </div>
-        {/* Card Faturamento Mensal */}
+  
         <div className="bg-[#003049] text-white rounded-xl p-6 shadow-md">
           <div className="flex items-center space-x-4">
             <DollarSign className="text-3xl" />
@@ -275,7 +275,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ====== GRÁFICOS ====== */}
       <div className="mt-5">
         <FaturamentoConsolidado />
       </div>

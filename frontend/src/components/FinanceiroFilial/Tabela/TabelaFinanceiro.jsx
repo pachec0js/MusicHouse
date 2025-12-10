@@ -63,13 +63,13 @@ export default function TabelaFinanceiro() {
     }
   }
 
-  // CARREGAR DESPESAS
   useEffect(() => {
     async function carregarDespesas() {
       const res = await fetch("http://localhost:8080/despesas/franquia/", {
         cache: 'no-store',
         credentials: 'include',
       });
+      await new Promise((resolve) => setTimeout(resolve, 1200));
       const data = await res.json();
       setProdutos(data);
       setCarregando(false);
@@ -77,14 +77,11 @@ export default function TabelaFinanceiro() {
     carregarDespesas();
   }, []);
 
-  // categorias dinâmicas
   const categorias = ["todas", ...new Set(produtos.map((p) => p.categoria))];
 
   const produtosFiltrados = useMemo(() => {
     return produtos.filter((p) => {
-      const matchNome = p.descricao
-        ?.toLowerCase()
-        .includes(busca.toLowerCase());
+      const matchNome = p.descricao?.toLowerCase().includes(busca.toLowerCase());
 
       const matchCategoria =
         categoriaFiltro === "todas" || p.categoria === categoriaFiltro;
@@ -112,12 +109,8 @@ export default function TabelaFinanceiro() {
 
   const totalPaginas = Math.ceil(produtosOrdenados.length / itensPorPagina);
   const inicio = (paginaAtual - 1) * itensPorPagina;
-  const produtosPagina = produtosOrdenados.slice(
-    inicio,
-    inicio + itensPorPagina
-  );
+  const produtosPagina = produtosOrdenados.slice(inicio, inicio + itensPorPagina);
 
-  // EDITAR
   const abrirModalEditar = (item) => {
     setDespesaEdit({
       id_despesa: item.id_despesa,
@@ -146,7 +139,6 @@ export default function TabelaFinanceiro() {
     setOpenEdit(false);
     window.location.reload();
   };
-
 
   const abrirModalDeletar = (item) => {
     setDespesaDelete(item);
@@ -198,12 +190,10 @@ export default function TabelaFinanceiro() {
     }
   };
 
-  if (carregando) return <p>Carregando...</p>;
-
   return (
     <div className="space-y-6">
 
-      {/* MODAL EDITAR */}
+   
       <ModalEditarDespesa
         openEdit={openEdit}
         setOpenEdit={setOpenEdit}
@@ -212,7 +202,7 @@ export default function TabelaFinanceiro() {
         salvarEdicao={salvarEdicao}
       />
 
-      {/* MODAL CONFIRMAR PAGAMENTO */}
+ 
       <Dialog open={openConfirmarPagar} onOpenChange={setOpenConfirmarPagar}>
         <DialogContent className="bg-zinc-900 text-white border border-green-900 max-w-sm">
           <DialogHeader>
@@ -221,31 +211,22 @@ export default function TabelaFinanceiro() {
             </DialogTitle>
             <DialogDescription className="text-zinc-400">
               Deseja marcar a despesa{" "}
-              <span className="font-bold text-white">
-                {despesaPagar?.descricao}
-              </span>{" "}
+              <span className="font-bold text-white">{despesaPagar?.descricao}</span>{" "}
               como <b>PAGA</b>?
             </DialogDescription>
           </DialogHeader>
 
           <DialogFooter className="mt-4 flex justify-end gap-3">
-            <Button
-              onClick={() => setOpenConfirmarPagar(false)}
-              className="bg-zinc-700 hover:bg-zinc-600"
-            >
+            <Button onClick={() => setOpenConfirmarPagar(false)} className="bg-zinc-700 hover:bg-zinc-600">
               Cancelar
             </Button>
 
-            <Button
-              onClick={confirmarPagarDespesa}
-              className="bg-green-700 hover:bg-green-600"
-            >
+            <Button onClick={confirmarPagarDespesa} className="bg-green-700 hover:bg-green-600">
               Confirmar
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
 
       <Dialog open={openDelete} onOpenChange={setOpenDelete}>
         <DialogContent className="bg-zinc-900 text-white border border-red-900 max-w-sm">
@@ -254,35 +235,24 @@ export default function TabelaFinanceiro() {
               Confirmar Exclusão
             </DialogTitle>
             <DialogDescription className="text-zinc-400">
-              Tem certeza que deseja excluir a despesa{" "}
-              <span className="font-bold text-white">
-                {despesaDelete?.descricao}
-              </span>
-              ?
-              <br />
-              Esta ação é permanente e não pode ser desfeita.
+              Tem certeza que deseja excluir{" "}
+              <span className="font-bold text-white">{despesaDelete?.descricao}</span>?
             </DialogDescription>
           </DialogHeader>
 
-          <DialogFooter className="mt-4 flex justify-end gap-3">
-            <Button
-              onClick={() => setOpenDelete(false)}
-              className="bg-zinc-700 hover:bg-zinc-600"
-            >
+          <DialogFooter className="mt-4">
+            <Button onClick={() => setOpenDelete(false)} className="bg-zinc-700 hover:bg-zinc-600">
               Cancelar
             </Button>
 
-            <Button
-              onClick={confirmarDelete}
-              className="bg-red-700 hover:bg-red-600"
-            >
+            <Button onClick={confirmarDelete} className="bg-red-700 hover:bg-red-600">
               Confirmar
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-
+  
       <Filtros
         busca={busca}
         setBusca={setBusca}
@@ -311,7 +281,7 @@ export default function TabelaFinanceiro() {
                   key={col.label}
                   onClick={() => ordenar(col.key)}
                   className={`${index === 0 ? "pl-10" : "p-4"} 
-        text-left uppercase text-xs font-bold cursor-pointer select-none`}
+                  text-left uppercase text-xs font-bold cursor-pointer select-none`}
                 >
                   {col.label}
 
@@ -327,19 +297,60 @@ export default function TabelaFinanceiro() {
             </tr>
           </thead>
 
-
           <tbody>
-            {produtosPagina.length ? (
+    
+            {carregando ? (
+              [...Array(5)].map((_, i) => (
+                <tr key={i} className="border-b border-zinc-800 animate-pulse">
+
+                  <td className="pl-10 py-4">
+                    <div className="h-4 w-10 bg-zinc-700/40 rounded"></div>
+                  </td>
+
+                  <td className="p-4">
+                    <div className="h-4 w-56 bg-zinc-700/40 rounded mb-2"></div>
+                    <div className="h-4 w-40 bg-zinc-700/20 rounded"></div>
+                  </td>
+
+                  <td className="p-4">
+                    <div className="h-6 w-24 bg-zinc-700/30 rounded-full"></div>
+                  </td>
+
+                  <td className="p-4">
+                    <div className="h-4 w-24 bg-zinc-700/40 rounded"></div>
+                  </td>
+
+                  <td className="p-4">
+                    <div className="h-4 w-20 bg-zinc-700/40 rounded"></div>
+                  </td>
+
+                  <td className="p-4">
+                    <div className="h-4 w-24 bg-zinc-700/40 rounded"></div>
+                  </td>
+
+                  <td className="p-4">
+                    <div className="h-4 w-24 bg-zinc-700/40 rounded"></div>
+                  </td>
+
+                  <td className="p-4">
+                    <div className="flex gap-3">
+                      <div className="h-8 w-8 rounded-full bg-zinc-700/40"></div>
+                      <div className="h-8 w-8 rounded-full bg-zinc-700/40"></div>
+                      <div className="h-8 w-8 rounded-full bg-zinc-700/40"></div>
+                    </div>
+                  </td>
+                </tr>
+              ))
+
+  
+            ) : produtosPagina.length ? (
               produtosPagina.map((p) => (
-                <tr
-                  key={p.id_despesa}
-                  className="border-b border-zinc-800 hover:bg-zinc-800/50"
-                >
+                <tr key={p.id_despesa} className="border-b border-zinc-800 hover:bg-zinc-800/50">
+
                   <td className="pl-10 pr-3 py-3">{p.id_despesa}</td>
 
                   <td className="p-3">
                     <p className="font-semibold">{p.descricao}</p>
-
                   </td>
 
                   <td className="p-3">
@@ -353,9 +364,10 @@ export default function TabelaFinanceiro() {
                   </td>
 
                   <td className="p-3 font-bold text-zinc-200">{p.status}</td>
-                  <td className="p-3 font-bold text-zinc-200"> {formatarDataBR(p.data_criacao)}</td>
-                  <td className="p-3 font-bold text-zinc-200"> {formatarDataBR(p.data_pagamento)}</td>
 
+                  <td className="p-3 font-bold text-zinc-200">{formatarDataBR(p.data_criacao)}</td>
+
+                  <td className="p-3 font-bold text-zinc-200">{formatarDataBR(p.data_pagamento)}</td>
 
                   <td className="p-3 flex items-center gap-3">
 
@@ -369,7 +381,6 @@ export default function TabelaFinanceiro() {
                       </button>
                     )}
 
-
                     <button
                       onClick={() => abrirModalEditar(p)}
                       className="p-2 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition"
@@ -377,16 +388,17 @@ export default function TabelaFinanceiro() {
                       <Pencil className="w-4 h-4 text-zinc-200" />
                     </button>
 
-
                     <button
                       onClick={() => abrirModalDeletar(p)}
                       className="p-2 rounded-full bg-red-900/50 hover:bg-red-800/60 border border-red-700 transition"
                     >
                       <Trash2 className="w-4 h-4 text-red-400" />
                     </button>
+
                   </td>
                 </tr>
               ))
+
             ) : (
               <tr>
                 <td colSpan="10">
@@ -401,7 +413,6 @@ export default function TabelaFinanceiro() {
                   </div>
                 </td>
               </tr>
-  
             )}
           </tbody>
         </table>

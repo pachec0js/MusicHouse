@@ -40,8 +40,8 @@ const selectStyle = {
     backgroundColor: isFocused
       ? '#C1121F'
       : isSelected
-      ? '#003049' 
-      : 'white',
+        ? '#003049'
+        : 'white',
 
     color: isFocused || isSelected ? 'white' : '#003049',
 
@@ -91,17 +91,17 @@ export default function estoqueFilial() {
   useEffect(() => {
     async function carregar() {
       try {
-     const res = await fetch(
-  `http://localhost:8080/estoque/franquia`,
-  {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    cache: 'no-store',
-    credentials: 'include', 
-  });
-
+        const res = await fetch(
+          `http://localhost:8080/estoque/franquia`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            cache: 'no-store',
+            credentials: 'include',
+          });
+        await new Promise((resolve) => setTimeout(resolve, 1200));
         const data = await res.json();
         setEstoque(data || []);
       } catch (error) {
@@ -113,6 +113,11 @@ export default function estoqueFilial() {
 
     carregar();
   }, []);
+
+  useEffect(() => {
+  setPaginaAtual(1);
+}, [busca, skuFiltro, categoriaFiltro, estoqueFiltro, ordenarPor, ordem]);
+
 
   const categorias = ["Todos", ...new Set(estoque.map((p) => p.categoria))];
 
@@ -128,7 +133,7 @@ export default function estoqueFilial() {
     value: s,
   }));
 
-  // FILTRO
+
   const itensFiltrados = useMemo(() => {
     return estoque.filter((item) => {
       const matchNome = item.produto
@@ -167,7 +172,7 @@ export default function estoqueFilial() {
     });
   }, [itensFiltrados, ordenarPor, ordem]);
 
-  // PAGINAÇÃO
+
   const totalPaginas = Math.ceil(itensOrdenados.length / itensPorPagina);
   const inicio = (paginaAtual - 1) * itensPorPagina;
   const itensPagina = itensOrdenados.slice(inicio, inicio + itensPorPagina);
@@ -180,10 +185,10 @@ export default function estoqueFilial() {
         Visualize e filtre os produtos disponíveis.
       </p>
 
-      {/* FILTROS */}
+
       <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-md grid grid-cols-1 md:grid-cols-4 gap-4">
 
-        {/* Buscar Nome */}
+    
         <div className="flex flex-col">
           <label className="text-sm text-zinc-400 mb-1">Buscar produto</label>
           <input
@@ -194,7 +199,7 @@ export default function estoqueFilial() {
           />
         </div>
 
-        {/* Buscar SKU */}
+
         <div className="flex flex-col">
           <label className="text-sm text-zinc-400 mb-1">Buscar SKU</label>
           <input
@@ -205,7 +210,6 @@ export default function estoqueFilial() {
           />
         </div>
 
-        {/* Categoria – React-Select */}
         <div className="flex flex-col">
           <label className="text-sm text-zinc-400 mb-1">Categoria</label>
           <Select
@@ -217,7 +221,7 @@ export default function estoqueFilial() {
           />
         </div>
 
-        {/* Estoque – React-Select */}
+     
         <div className="flex flex-col">
           <label className="text-sm text-zinc-400 mb-1">Estoque</label>
           <Select
@@ -230,7 +234,7 @@ export default function estoqueFilial() {
         </div>
 
       </div>
-Z
+      Z
       <div className="bg-zinc-900 rounded-xl border border-zinc-800 text-white w-full mt-6 overflow-x-auto">
         <table className="w-full min-w-[900px]">
 
@@ -264,12 +268,41 @@ Z
 
           <tbody>
             {carregando ? (
-              <tr>
-                <td colSpan="5" className="text-center p-6 text-zinc-500">
-                  Carregando...
-                </td>
-              </tr>
+              <>
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+                  <tr key={i} className="border-b border-zinc-800 animate-pulse">
+
+             
+                    <td className="pl-10 py-4">
+                      <div className="h-4 w-16 bg-zinc-700/40 rounded"></div>
+                    </td>
+
+        
+                    <td className="p-4">
+                      <div className="h-4 w-40 bg-zinc-700/40 rounded mb-2"></div>
+                      <div className="h-4 w-28 bg-zinc-700/30 rounded"></div>
+                    </td>
+
+        
+                    <td className="p-4">
+                      <div className="h-6 w-24 bg-zinc-700/40 rounded-full"></div>
+                    </td>
+
+          
+                    <td className="p-4">
+                      <div className="h-4 w-10 bg-zinc-700/40 rounded"></div>
+                    </td>
+
+                
+                    <td className="p-4 flex items-center gap-3">
+                      <div className="w-9 h-9 bg-zinc-700/40 rounded"></div>
+                    </td>
+
+                  </tr>
+                ))}
+              </>
             ) : itensPagina.length ? (
+
               itensPagina.map((item) => (
                 <tr
                   key={item.sku}
@@ -303,7 +336,7 @@ Z
                       quantidadeProduto={item.quantidade}
                       aviso={item.aviso}
                     />
-                 
+
                   </td>
                 </tr>
               ))

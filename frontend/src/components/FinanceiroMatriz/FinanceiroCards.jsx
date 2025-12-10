@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, NotebookText, Wallet, Package } from "lucide-react";
+
 
 export default function FinanceiroCards({
   lucroMes,
@@ -15,7 +15,7 @@ export default function FinanceiroCards({
         <div className="bg-white rounded-xl p-6 shadow-md border">
           <h2 className="text-xl font-semibold text-gray-900">Receita do Mês</h2>
           <p className="text-gray-500 mt-1 text-sm">
-            Total arrecadado com vendas de instrumentos.
+            Total arrecado com todas a franquias.
           </p>
           <div className="mt-6 text-3xl font-bold">
             R$ {formatarMoeda(lucroMes)}

@@ -152,6 +152,28 @@ const totalLucroMensal = async (id_franquia) => {
 
 
 
+const totalLucroMensalGeral = async () => {
+  try {
+    const sql = `
+      SELECT 
+        COALESCE(SUM(lucro), 0) AS total_lucro
+      FROM venda
+      WHERE status = 'Paga'
+        AND MONTH(data_venda) = MONTH(CURRENT_DATE())
+        AND YEAR(data_venda) = YEAR(CURRENT_DATE());
+    `;
+
+    const resultado = await executeRawQuery(sql);
+
+    return Number(resultado[0]?.total_lucro) || 0;
+
+  } catch (err) {
+    console.error("Erro ao calcular lucro mensal:", err);
+    throw err;
+  }
+};
+
+
 
 
 
@@ -170,7 +192,8 @@ export {
   listarDespesasFuturas,
   totalDespesasAPagar,
   totalLucroMensal, 
-  atualizarDespesaParaPaga
+  atualizarDespesaParaPaga,
+  totalLucroMensalGeral
 
 
 };
