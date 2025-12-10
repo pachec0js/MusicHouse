@@ -1,4 +1,3 @@
-// app/filial/layout.jsx
 import RotaProtegida from "@/components/RotaProtegida/RotaProtegida";
 import "../globals.css";
 import NextTopLoader from "nextjs-toploader";
@@ -7,6 +6,7 @@ import { Header } from "@/components/LayoutFilial/header";
 import { SidebarProvider } from "@/components/LayoutFilial/sidebar/sidebar-context";
 import FooterFilial from "@/components/FooterFilial/FooterFilial";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "Music House",
@@ -16,6 +16,12 @@ export const metadata = {
 export default async function RootLayout({ children }) {
   const cookieStore = cookies();
 
+
+  const token = cookieStore.get("token");
+  if (!token) {
+    redirect("/");
+  }
+
   const requestUser = await fetch("http://localhost:8080/auth/auth-check/franquia", {
     method: "GET",
     headers: {
@@ -24,6 +30,11 @@ export default async function RootLayout({ children }) {
     credentials: "include",
     cache: "no-store",
   });
+
+  
+  if (!requestUser.ok) {
+    redirect("/");
+  }
 
   const USER = await requestUser.json();
 
@@ -35,13 +46,18 @@ export default async function RootLayout({ children }) {
         <div className="flex min-h-screen">
           <Sidebar />
 
-          <div className="w-full bg-gray-2 bg-gray-100">
-            <Header user={USER} cidade={USER.franquia.cidade} franquia_endereco={USER.franquia.endereco_completo} />
+          <div className="w-full bg-gray-100">
+            <Header
+              user={USER}
+              cidade={USER.franquia?.cidade}
+              franquia_endereco={USER.franquia?.endereco_completo}
+            />
 
             <main className="isolate px-10 py-5 mx-auto w-full max-w-screen-2xl overflow-hidden">
               {children}
             </main>
-             <FooterFilial />
+
+            <FooterFilial />
           </div>
         </div>
       </SidebarProvider>
