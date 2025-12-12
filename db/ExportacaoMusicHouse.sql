@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.44, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.41, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: musichouse
 -- ------------------------------------------------------
--- Server version	5.5.5-10.4.32-MariaDB
+-- Server version	9.3.0
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -19,19 +19,15 @@
 -- Table structure for table `caixas`
 --
 
-drop database if exists `musicHouse`;
-CREATE DATABASE IF NOT EXISTS `musicHouse`;
-USE `musicHouse`;
-
 DROP TABLE IF EXISTS `caixas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `caixas` (
-  `id_sessao_caixa` int(11) NOT NULL AUTO_INCREMENT,
-  `id_franquia` int(11) NOT NULL,
-  `id_funcionario` int(11) NOT NULL,
-  `status` enum('aberto','fechado') NOT NULL DEFAULT 'aberto',
-  `data_abertura` timestamp NOT NULL DEFAULT current_timestamp(),
+  `id_sessao_caixa` int NOT NULL AUTO_INCREMENT,
+  `id_franquia` int NOT NULL,
+  `id_funcionario` int NOT NULL,
+  `status` enum('aberto','fechado') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'aberto',
+  `data_abertura` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `data_fechamento` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id_sessao_caixa`),
   KEY `fk_caixa_franquia` (`id_franquia`),
@@ -59,11 +55,11 @@ DROP TABLE IF EXISTS `categorias`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `categorias` (
-  `id_categoria` int(11) NOT NULL AUTO_INCREMENT,
-  `nome` varchar(200) NOT NULL,
-  `descricao` varchar(300) NOT NULL,
-  `icone` text NOT NULL,
-  `iconeSite` text NOT NULL,
+  `id_categoria` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(200) COLLATE utf8mb4_general_ci NOT NULL,
+  `descricao` varchar(300) COLLATE utf8mb4_general_ci NOT NULL,
+  `icone` text COLLATE utf8mb4_general_ci NOT NULL,
+  `iconeSite` text COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id_categoria`),
   UNIQUE KEY `nome` (`nome`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -87,22 +83,25 @@ DROP TABLE IF EXISTS `chamados`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `chamados` (
-  `id_chamado` int(11) NOT NULL AUTO_INCREMENT,
-  `id_franquia` int(11) NOT NULL,
-  `id_funcionario` int(11) NOT NULL,
+  `id_chamado` int NOT NULL AUTO_INCREMENT,
+  `id_franquia` int NOT NULL,
+  `id_funcionario` int NOT NULL,
+  `nome_func` text NOT NULL,
+  `email` text NOT NULL,
   `titulo` varchar(200) NOT NULL,
   `descricao` text NOT NULL,
   `categoria` enum('Sistema','Financeiro','Produto','Estoque','Venda','Funcionário','Outros') NOT NULL,
   `prioridade` enum('Baixa','Média','Alta','Crítica') NOT NULL DEFAULT 'Média',
-  `status` enum('Aberto','Em andamento','Aguardando resposta','Resolvido','Cancelado') NOT NULL DEFAULT 'Aberto',
-  `data_abertura` timestamp NOT NULL DEFAULT current_timestamp(),
-  `data_atualizacao` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `apontamento_final` text,
+  `status` enum('Aberto','Em andamento','Resolvido','Cancelado') NOT NULL DEFAULT 'Aberto',
+  `data_abertura` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `data_atualizacao` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_chamado`),
   KEY `fk_chamado_franquia` (`id_franquia`),
   KEY `fk_chamado_func` (`id_funcionario`),
   CONSTRAINT `fk_chamado_franquia` FOREIGN KEY (`id_franquia`) REFERENCES `franquias` (`id_franquia`),
   CONSTRAINT `fk_chamado_func` FOREIGN KEY (`id_funcionario`) REFERENCES `funcionarios` (`id_registro`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -122,14 +121,14 @@ DROP TABLE IF EXISTS `clientes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `clientes` (
-  `id_cliente` int(11) NOT NULL AUTO_INCREMENT,
-  `nome_completo` varchar(300) NOT NULL,
-  `cpf` char(11) DEFAULT NULL,
-  `email` varchar(120) DEFAULT NULL,
-  `telefone` varchar(20) DEFAULT NULL,
+  `id_cliente` int NOT NULL AUTO_INCREMENT,
+  `nome_completo` varchar(300) COLLATE utf8mb4_general_ci NOT NULL,
+  `cpf` char(11) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `email` varchar(120) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `telefone` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `data_nascimento` date DEFAULT NULL,
-  `status` enum('Ativo','Inativo') NOT NULL DEFAULT 'Ativo',
-  `data_registro` timestamp NOT NULL DEFAULT current_timestamp(),
+  `status` enum('Ativo','Inativo') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Ativo',
+  `data_registro` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_cliente`),
   UNIQUE KEY `cpf` (`cpf`),
   UNIQUE KEY `email` (`email`)
@@ -153,9 +152,9 @@ DROP TABLE IF EXISTS `credenciais`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `credenciais` (
-  `id_credenciais` int(11) NOT NULL AUTO_INCREMENT,
-  `cargo` varchar(150) NOT NULL,
-  `descricao` varchar(150) NOT NULL,
+  `id_credenciais` int NOT NULL AUTO_INCREMENT,
+  `cargo` varchar(150) COLLATE utf8mb4_general_ci NOT NULL,
+  `descricao` varchar(150) COLLATE utf8mb4_general_ci NOT NULL,
   `salario` decimal(10,2) NOT NULL,
   PRIMARY KEY (`id_credenciais`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -179,14 +178,14 @@ DROP TABLE IF EXISTS `cupons`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `cupons` (
-  `id_cupom` int(11) NOT NULL AUTO_INCREMENT,
-  `codigo` varchar(30) NOT NULL,
-  `tipo` enum('percentual','valor_fixo') NOT NULL,
+  `id_cupom` int NOT NULL AUTO_INCREMENT,
+  `codigo` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+  `tipo` enum('percentual','valor_fixo') COLLATE utf8mb4_general_ci NOT NULL,
   `valor` decimal(10,2) NOT NULL,
-  `minimo_compra` decimal(10,2) DEFAULT 0.00,
+  `minimo_compra` decimal(10,2) DEFAULT '0.00',
   `validade` date DEFAULT NULL,
-  `ativo` tinyint(1) NOT NULL DEFAULT 1,
-  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `ativo` tinyint(1) NOT NULL DEFAULT '1',
+  `criado_em` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_cupom`),
   UNIQUE KEY `codigo` (`codigo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -209,14 +208,14 @@ DROP TABLE IF EXISTS `despesas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `despesas` (
-  `id_despesa` int(11) NOT NULL AUTO_INCREMENT,
-  `id_franquia` int(11) NOT NULL,
-  `categoria` varchar(100) NOT NULL,
-  `descricao` text NOT NULL,
+  `id_despesa` int NOT NULL AUTO_INCREMENT,
+  `id_franquia` int NOT NULL,
+  `categoria` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `descricao` text COLLATE utf8mb4_general_ci NOT NULL,
   `valor` decimal(10,2) NOT NULL,
   `data_criacao` date NOT NULL,
   `data_pagamento` date NOT NULL,
-  `status` enum('Paga','Pendente','Atrasada') NOT NULL,
+  `status` enum('Paga','Pendente','Atrasada') COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id_despesa`),
   KEY `id_franquia` (`id_franquia`),
   CONSTRAINT `despesas_ibfk_1` FOREIGN KEY (`id_franquia`) REFERENCES `franquias` (`id_franquia`)
@@ -241,18 +240,18 @@ DROP TABLE IF EXISTS `enderecos_cliente`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `enderecos_cliente` (
-  `id_endereco` int(11) NOT NULL AUTO_INCREMENT,
-  `id_cliente` int(11) NOT NULL,
-  `apelido` varchar(60) DEFAULT NULL,
-  `logradouro` varchar(150) NOT NULL,
-  `numero` varchar(20) DEFAULT NULL,
-  `complemento` varchar(100) DEFAULT NULL,
-  `bairro` varchar(100) DEFAULT NULL,
-  `cidade` varchar(100) NOT NULL,
-  `estado` char(2) NOT NULL,
-  `cep` varchar(20) NOT NULL,
-  `principal` tinyint(1) NOT NULL DEFAULT 0,
-  `criada_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `id_endereco` int NOT NULL AUTO_INCREMENT,
+  `id_cliente` int NOT NULL,
+  `apelido` varchar(60) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `logradouro` varchar(150) COLLATE utf8mb4_general_ci NOT NULL,
+  `numero` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `complemento` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `bairro` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cidade` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `estado` char(2) COLLATE utf8mb4_general_ci NOT NULL,
+  `cep` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `principal` tinyint(1) NOT NULL DEFAULT '0',
+  `criada_em` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_endereco`),
   KEY `fk_end_cliente` (`id_cliente`),
   CONSTRAINT `fk_end_cliente` FOREIGN KEY (`id_cliente`) REFERENCES `clientes` (`id_cliente`)
@@ -276,11 +275,11 @@ DROP TABLE IF EXISTS `estoque`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `estoque` (
-  `id_estoque` int(11) NOT NULL AUTO_INCREMENT,
-  `id_franquia` int(11) NOT NULL,
-  `sku` varchar(6) NOT NULL,
-  `quantidade` int(11) NOT NULL DEFAULT 0,
-  `aviso` int(11) NOT NULL DEFAULT 10,
+  `id_estoque` int NOT NULL AUTO_INCREMENT,
+  `id_franquia` int NOT NULL,
+  `sku` varchar(6) COLLATE utf8mb4_general_ci NOT NULL,
+  `quantidade` int NOT NULL DEFAULT '0',
+  `aviso` int NOT NULL DEFAULT '10',
   PRIMARY KEY (`id_estoque`),
   KEY `fk_est_franquia` (`id_franquia`),
   CONSTRAINT `fk_est_franquia` FOREIGN KEY (`id_franquia`) REFERENCES `franquias` (`id_franquia`)
@@ -305,8 +304,8 @@ DROP TABLE IF EXISTS `formaspagamentos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `formaspagamentos` (
-  `id_pagamento` int(11) NOT NULL AUTO_INCREMENT,
-  `tipo` enum('pix','debito','credito') NOT NULL,
+  `id_pagamento` int NOT NULL AUTO_INCREMENT,
+  `tipo` enum('pix','debito','credito') COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id_pagamento`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -329,14 +328,14 @@ DROP TABLE IF EXISTS `fornecedores`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `fornecedores` (
-  `id_fornecedor` int(11) NOT NULL AUTO_INCREMENT,
-  `nome` varchar(200) NOT NULL,
-  `cnpj` varchar(30) NOT NULL,
-  `objeto_fornecido` text NOT NULL,
+  `id_fornecedor` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(200) COLLATE utf8mb4_general_ci NOT NULL,
+  `cnpj` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+  `objeto_fornecido` text COLLATE utf8mb4_general_ci NOT NULL,
   `custo` decimal(10,2) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `endereco` varchar(255) NOT NULL,
-  `data_registro` timestamp NOT NULL DEFAULT current_timestamp(),
+  `email` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `endereco` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `data_registro` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_fornecedor`),
   UNIQUE KEY `cnpj` (`cnpj`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -360,15 +359,15 @@ DROP TABLE IF EXISTS `franquias`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `franquias` (
-  `id_franquia` int(11) NOT NULL AUTO_INCREMENT,
-  `codigo_postal` varchar(20) NOT NULL,
-  `endereco_completo` varchar(250) NOT NULL,
-  `cidade` varchar(100) NOT NULL,
-  `email_contato` varchar(100) NOT NULL,
-  `telefone_contato` varchar(100) NOT NULL,
-  `status` enum('Ativo','Inativo') NOT NULL DEFAULT 'Ativo',
-  `data_registro` timestamp NOT NULL DEFAULT current_timestamp(),
-  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id_franquia` int NOT NULL AUTO_INCREMENT,
+  `codigo_postal` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `endereco_completo` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+  `cidade` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `email_contato` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `telefone_contato` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `status` enum('Ativo','Inativo') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Ativo',
+  `data_registro` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `atualizado_em` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_franquia`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -391,26 +390,26 @@ DROP TABLE IF EXISTS `funcionarios`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `funcionarios` (
-  `id_registro` int(11) NOT NULL AUTO_INCREMENT,
-  `nome_completo` varchar(300) NOT NULL,
-  `cpf` char(11) NOT NULL,
-  `rg` varchar(9) DEFAULT NULL,
+  `id_registro` int NOT NULL AUTO_INCREMENT,
+  `nome_completo` varchar(300) COLLATE utf8mb4_general_ci NOT NULL,
+  `cpf` char(11) COLLATE utf8mb4_general_ci NOT NULL,
+  `rg` varchar(9) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `data_nascimento` date DEFAULT NULL,
-  `sexo` enum('Masculino','Feminino','Outro') DEFAULT 'Outro',
-  `estado_civil` enum('Solteiro','Casado','Divorciado','Viúvo','Outro') DEFAULT 'Solteiro',
-  `email` varchar(100) NOT NULL,
-  `telefone` varchar(20) NOT NULL,
-  `id_franquia` int(11) NOT NULL,
-  `id_credencial` int(11) NOT NULL,
-  `fotoFuncionario` text DEFAULT NULL,
-  `token` text DEFAULT NULL,
-  `reset_token` varchar(100) DEFAULT NULL,
+  `sexo` enum('Masculino','Feminino','Outro') COLLATE utf8mb4_general_ci DEFAULT 'Outro',
+  `estado_civil` enum('Solteiro','Casado','Divorciado','Viúvo','Outro') COLLATE utf8mb4_general_ci DEFAULT 'Solteiro',
+  `email` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `telefone` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `id_franquia` int NOT NULL,
+  `id_credencial` int NOT NULL,
+  `fotoFuncionario` text COLLATE utf8mb4_general_ci,
+  `token` text COLLATE utf8mb4_general_ci,
+  `reset_token` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `reset_expires` datetime DEFAULT NULL,
-  `senha` text NOT NULL,
-  `primeiroLogin` tinyint(1) DEFAULT 1,
-  `status` enum('Ativo','Inativo') DEFAULT 'Ativo',
-  `data_registro` timestamp NOT NULL DEFAULT current_timestamp(),
-  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `senha` text COLLATE utf8mb4_general_ci NOT NULL,
+  `primeiroLogin` tinyint(1) DEFAULT '1',
+  `status` enum('Ativo','Inativo') COLLATE utf8mb4_general_ci DEFAULT 'Ativo',
+  `data_registro` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `atualizado_em` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_registro`),
   KEY `fk_func_franquia` (`id_franquia`),
   KEY `fk_func_cred` (`id_credencial`),
@@ -437,11 +436,11 @@ DROP TABLE IF EXISTS `item_venda`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `item_venda` (
-  `id_item` int(11) NOT NULL AUTO_INCREMENT,
-  `id_venda` int(11) NOT NULL,
-  `sku_produto` varchar(6) DEFAULT NULL,
-  `sku_variacao` varchar(6) DEFAULT NULL,
-  `quantidade` int(11) NOT NULL,
+  `id_item` int NOT NULL AUTO_INCREMENT,
+  `id_venda` int NOT NULL,
+  `sku_produto` varchar(6) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `sku_variacao` varchar(6) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `quantidade` int NOT NULL,
   `preco_unitario` decimal(10,2) DEFAULT NULL,
   `lucro` decimal(10,2) DEFAULT NULL,
   `valor_total` decimal(10,2) NOT NULL,
@@ -469,16 +468,16 @@ DROP TABLE IF EXISTS `movimentacoes_estoque`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `movimentacoes_estoque` (
-  `id_movimentacao` int(11) NOT NULL AUTO_INCREMENT,
-  `id_estoque` int(11) NOT NULL,
-  `id_franquia` int(11) NOT NULL,
-  `id_funcionario` int(11) NOT NULL,
-  `tipo_movimentacao` enum('entrada','saida') NOT NULL,
-  `quantidade_anterior` int(11) NOT NULL,
-  `quantidade_movimentada` int(11) NOT NULL,
-  `quantidade_atual` int(11) NOT NULL,
-  `observacao` text DEFAULT NULL,
-  `data_movimentacao` timestamp NOT NULL DEFAULT current_timestamp(),
+  `id_movimentacao` int NOT NULL AUTO_INCREMENT,
+  `id_estoque` int NOT NULL,
+  `id_franquia` int NOT NULL,
+  `id_funcionario` int NOT NULL,
+  `tipo_movimentacao` enum('entrada','saida') COLLATE utf8mb4_general_ci NOT NULL,
+  `quantidade_anterior` int NOT NULL,
+  `quantidade_movimentada` int NOT NULL,
+  `quantidade_atual` int NOT NULL,
+  `observacao` text COLLATE utf8mb4_general_ci,
+  `data_movimentacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_movimentacao`),
   KEY `fk_mov_estoque` (`id_estoque`),
   KEY `fk_mov_franquia` (`id_franquia`),
@@ -507,16 +506,16 @@ DROP TABLE IF EXISTS `pedidos_filiais`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `pedidos_filiais` (
-  `id_pedido` int(11) NOT NULL AUTO_INCREMENT,
-  `id_franquia` int(11) NOT NULL,
-  `id_funcionario` int(11) NOT NULL,
-  `id_estoque` int(11) NOT NULL,
-  `quantidade` int(11) NOT NULL,
-  `observacao` text NOT NULL,
-  `status` enum('Pendente','Aprovado','Recusado') DEFAULT 'Pendente',
-  `prioridade` enum('Alta','Média','Baixa') DEFAULT 'Média',
-  `data_pedido` timestamp NULL DEFAULT current_timestamp(),
-  `data_atualizacao` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id_pedido` int NOT NULL AUTO_INCREMENT,
+  `id_franquia` int NOT NULL,
+  `id_funcionario` int NOT NULL,
+  `id_estoque` int NOT NULL,
+  `quantidade` int NOT NULL,
+  `observacao` text COLLATE utf8mb4_general_ci NOT NULL,
+  `status` enum('Pendente','Aprovado','Recusado') COLLATE utf8mb4_general_ci DEFAULT 'Pendente',
+  `prioridade` enum('Alta','Média','Baixa') COLLATE utf8mb4_general_ci DEFAULT 'Média',
+  `data_pedido` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `data_atualizacao` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_pedido`),
   KEY `fk_franquia` (`id_franquia`),
   KEY `fk_funcionario` (`id_funcionario`),
@@ -545,19 +544,19 @@ DROP TABLE IF EXISTS `produtos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `produtos` (
-  `id_produto` int(11) NOT NULL AUTO_INCREMENT,
-  `sku` varchar(6) NOT NULL,
-  `nome` varchar(200) NOT NULL,
-  `descricao` varchar(300) NOT NULL,
-  `materiais` varchar(300) NOT NULL,
-  `detalhes` varchar(300) NOT NULL,
-  `nome_cor` varchar(70) NOT NULL,
-  `cor` varchar(70) NOT NULL,
-  `desconto` int(11) DEFAULT NULL,
-  `id_categoria` int(11) NOT NULL,
+  `id_produto` int NOT NULL AUTO_INCREMENT,
+  `sku` varchar(6) COLLATE utf8mb4_general_ci NOT NULL,
+  `nome` varchar(200) COLLATE utf8mb4_general_ci NOT NULL,
+  `descricao` varchar(300) COLLATE utf8mb4_general_ci NOT NULL,
+  `materiais` varchar(300) COLLATE utf8mb4_general_ci NOT NULL,
+  `detalhes` varchar(300) COLLATE utf8mb4_general_ci NOT NULL,
+  `nome_cor` varchar(70) COLLATE utf8mb4_general_ci NOT NULL,
+  `cor` varchar(70) COLLATE utf8mb4_general_ci NOT NULL,
+  `desconto` int DEFAULT NULL,
+  `id_categoria` int NOT NULL,
   `valor` decimal(10,2) NOT NULL,
   `custo_producao` decimal(10,2) DEFAULT NULL,
-  `imagem` text NOT NULL,
+  `imagem` text COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id_produto`),
   UNIQUE KEY `sku` (`sku`),
   KEY `fk_prod_categoria` (`id_categoria`),
@@ -583,13 +582,13 @@ DROP TABLE IF EXISTS `produtos_fornecedores`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `produtos_fornecedores` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_produto` int(11) NOT NULL,
-  `id_fornecedor` int(11) NOT NULL,
-  `codigo_fornecedor` varchar(100) DEFAULT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_produto` int NOT NULL,
+  `id_fornecedor` int NOT NULL,
+  `codigo_fornecedor` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `custo` decimal(10,2) DEFAULT NULL,
-  `ativo` tinyint(1) NOT NULL DEFAULT 1,
-  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `ativo` tinyint(1) NOT NULL DEFAULT '1',
+  `criado_em` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_prod_for` (`id_produto`,`id_fornecedor`),
   KEY `fk_pf_forn` (`id_fornecedor`),
@@ -615,17 +614,17 @@ DROP TABLE IF EXISTS `variacoes_produto`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `variacoes_produto` (
-  `id_variacao` int(11) NOT NULL AUTO_INCREMENT,
-  `sku` varchar(6) NOT NULL,
-  `id_produto` int(11) NOT NULL,
-  `nome_cor` varchar(150) NOT NULL,
-  `cor` text NOT NULL,
+  `id_variacao` int NOT NULL AUTO_INCREMENT,
+  `sku` varchar(6) COLLATE utf8mb4_general_ci NOT NULL,
+  `id_produto` int NOT NULL,
+  `nome_cor` varchar(150) COLLATE utf8mb4_general_ci NOT NULL,
+  `cor` text COLLATE utf8mb4_general_ci NOT NULL,
   `valor` decimal(10,2) NOT NULL,
   `custo_producao` decimal(10,2) DEFAULT NULL,
-  `desconto` int(11) DEFAULT NULL,
-  `imagem` text DEFAULT NULL,
-  `status` enum('Ativo','Inativo') DEFAULT 'Ativo',
-  `data_registro` timestamp NOT NULL DEFAULT current_timestamp(),
+  `desconto` int DEFAULT NULL,
+  `imagem` text COLLATE utf8mb4_general_ci,
+  `status` enum('Ativo','Inativo') COLLATE utf8mb4_general_ci DEFAULT 'Ativo',
+  `data_registro` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_variacao`),
   UNIQUE KEY `sku` (`sku`),
   KEY `fk_var_prod` (`id_produto`),
@@ -651,17 +650,17 @@ DROP TABLE IF EXISTS `venda`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `venda` (
-  `id_venda` int(11) NOT NULL AUTO_INCREMENT,
-  `id_franquia` int(11) NOT NULL,
-  `id_funcionario` int(11) NOT NULL,
-  `id_sessao_caixa` int(11) NOT NULL,
+  `id_venda` int NOT NULL AUTO_INCREMENT,
+  `id_franquia` int NOT NULL,
+  `id_funcionario` int NOT NULL,
+  `id_sessao_caixa` int NOT NULL,
   `valor_total` decimal(10,2) NOT NULL,
-  `parcelamento` varchar(50) DEFAULT NULL,
+  `parcelamento` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `lucro` decimal(10,2) DEFAULT NULL,
   `desconto` decimal(10,2) DEFAULT NULL,
-  `id_pagamento` int(11) NOT NULL,
-  `status` enum('Aberta','Paga','Cancelada') NOT NULL DEFAULT 'Paga',
-  `data_venda` timestamp NOT NULL DEFAULT current_timestamp(),
+  `id_pagamento` int NOT NULL,
+  `status` enum('Aberta','Paga','Cancelada') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Paga',
+  `data_venda` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_venda`),
   KEY `fk_venda_franquia` (`id_franquia`),
   KEY `fk_venda_func` (`id_funcionario`),
@@ -692,8 +691,8 @@ DROP TABLE IF EXISTS `venda_cupom`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `venda_cupom` (
-  `id_venda` int(11) NOT NULL,
-  `id_cupom` int(11) NOT NULL,
+  `id_venda` int NOT NULL,
+  `id_cupom` int NOT NULL,
   PRIMARY KEY (`id_venda`,`id_cupom`),
   KEY `fk_vc_cupom` (`id_cupom`),
   CONSTRAINT `fk_vc_cupom` FOREIGN KEY (`id_cupom`) REFERENCES `cupons` (`id_cupom`),
@@ -719,4 +718,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-12-10  1:03:08
+-- Dump completed on 2025-12-12  8:10:44

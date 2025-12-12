@@ -49,8 +49,6 @@ export default function FecharCaixa({ numFuncionario }) {
           credentials: 'include',
         });
 
-        alert('Caixa fechado com sucesso!');
-
         await fetch('http://localhost:8080/auth/logout', {
           method: 'POST',
           headers: {

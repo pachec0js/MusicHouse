@@ -255,13 +255,6 @@ export default function DialogVerChamado({ chamados, index = 0 }) {
               Assim que novos chamados forem criados, eles aparecerão aqui.
             </h1>
             <div className="flex flex-col items-center justify-center text-center w-full">
-
-              <img
-                src="/matriz/semVariacao.png"
-                alt=""
-                className="w-80 mt-2"
-              />
-
             </div>
 
             <div className="flex gap-3 justify-end">

@@ -168,7 +168,6 @@ export default function Page() {
       const data = await response.json();
 
       if (response.ok) {
-        alert(data.mensagem);
         setTiket('');
         setTitulo('');
         setCategoria(null);
